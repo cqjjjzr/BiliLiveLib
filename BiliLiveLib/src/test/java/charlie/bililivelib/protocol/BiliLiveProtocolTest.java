@@ -3,12 +3,14 @@ package charlie.bililivelib.protocol;
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.GlobalObjects;
 import charlie.bililivelib.i18n.I18n;
+import charlie.bililivelib.net.datamodel.LiveAddresses;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Level;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.lang.reflect.Field;
 
@@ -72,5 +74,20 @@ public class BiliLiveProtocolTest {
 
     private HttpClient createInvalidHttpClient() {
         return HttpClientBuilder.create().setProxy(new HttpHost("127.0.0.1", 33112)).build();
+    }
+
+    @Test
+    public void getLiveAddresses() throws Exception {
+        System.out.println(protocol.getLiveAddresses(294140));
+    }
+
+    @org.junit.Test
+    public void getLiveAddressesInvalid() throws Exception {
+        try {
+            LiveAddresses addresses = protocol.getLiveAddresses(1744048751);
+            assertTrue(addresses.getLineMain().isEmpty());
+        } catch (BiliLiveException ex){
+            LogUtil.logException(Level.ERROR, "Failed getting live address!", ex);
+        }
     }
 }

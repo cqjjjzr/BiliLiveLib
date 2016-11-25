@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 @Data
-public class ResponseJson {
+public class ErrorResponseJson {
     private int code;
     @SerializedName("msg")
     private String message;
