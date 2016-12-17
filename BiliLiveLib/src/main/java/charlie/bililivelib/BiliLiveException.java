@@ -14,6 +14,6 @@ public class BiliLiveException extends Exception {
     }
 
     public static BiliLiveException createHttpError(String message, int status) {
-        return new BiliLiveException(message + I18n.format("exception.bttp_error", status));
+        return new BiliLiveException(message + I18n.format("exception.http_error", status));
     }
 }

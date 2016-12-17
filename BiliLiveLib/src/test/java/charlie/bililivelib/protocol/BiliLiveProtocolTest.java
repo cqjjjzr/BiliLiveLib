@@ -2,6 +2,7 @@ package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.datamodel.Room;
 import charlie.bililivelib.i18n.I18n;
 import charlie.bililivelib.net.datamodel.LiveAddresses;
 import charlie.bililivelib.util.LogUtil;
@@ -18,7 +19,6 @@ import static org.junit.Assert.*;
 
 public class BiliLiveProtocolTest {
     private BiliLiveProtocol protocol;
-    private GlobalObjects go = new GlobalObjects();
 
     @BeforeClass
     public static void init() {
@@ -28,8 +28,7 @@ public class BiliLiveProtocolTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
-        go.init();
-        protocol = new BiliLiveProtocol(go);
+        protocol = new BiliLiveProtocol();
     }
 
     @org.junit.Test
@@ -61,10 +60,11 @@ public class BiliLiveProtocolTest {
 
     private HttpClient forceReplaceAndReturnHttpClient(HttpClient httpClient) {
         try {
-            Field clientField = go.getHttpHelper().getClass().getDeclaredField("httpClient");
+            Field clientField = GlobalObjects.instance()
+                    .getHttpHelper().getClass().getDeclaredField("httpClient");
             clientField.setAccessible(true);
-            HttpClient original = (HttpClient) clientField.get(go.getHttpHelper());
-            clientField.set(go.getHttpHelper(), httpClient);
+            HttpClient original = (HttpClient) clientField.get(GlobalObjects.instance().getHttpHelper());
+            clientField.set(GlobalObjects.instance().getHttpHelper(), httpClient);
             return original;
         } catch (Exception e) {
             LogUtil.logException(Level.ERROR, "Error replacing Http Client!", e);
@@ -88,6 +88,19 @@ public class BiliLiveProtocolTest {
             assertTrue(addresses.getLineMain().isEmpty());
         } catch (BiliLiveException ex){
             LogUtil.logException(Level.ERROR, "Failed getting live address!", ex);
+        }
+    }
+
+    @org.junit.Test
+    public void getRoomInfo() throws Exception {
+        try {
+            Room room = new Room();
+            room.setRoomID(459985);
+            protocol.fillRoomInfo(room);
+            assertEquals("山新直播间", room.getRoomTitle());
+            System.out.println(room);
+        } catch (BiliLiveException ex){
+            LogUtil.logException(Level.ERROR, "Error getting room id!", ex);
         }
     }
 }

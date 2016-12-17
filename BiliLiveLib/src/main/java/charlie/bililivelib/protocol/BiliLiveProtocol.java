@@ -2,6 +2,7 @@ package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.datamodel.Room;
 import charlie.bililivelib.i18n.I18n;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.net.datamodel.LiveAddresses;
@@ -29,6 +30,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public class BiliLiveProtocol {
     private static final String REAL_ROOMID_GET = "/";
     private static final String LIVE_ADDRESSES_GET = "/api/playurl&player=1&quality=0&cid=";
+    private static final String LIVE_GET_INFO_GET = "/live/getInfo?roomid=";
+
     private static final int INVALID_ROOM_ID = -1;
     private static final String RESP_RESULT_SUCCESS = "suee";
 
@@ -38,17 +41,17 @@ public class BiliLiveProtocol {
     private final HttpHelper httpHelper;
     private final Pattern REAL_ROOMID_PATTERN;
 
-    public BiliLiveProtocol(GlobalObjects globalObjects) {
-        gson = new Gson();
-
+    public BiliLiveProtocol() {
+        GlobalObjects globalObjects = GlobalObjects.instance();
         BILILIVE_ROOT = globalObjects.getBiliLiveRoot();
         httpHelper = globalObjects.getHttpHelper();
+        gson = globalObjects.getGson();
         REAL_ROOMID_PATTERN = Pattern.compile("(?<=var ROOMID = )(\\d+)(?=;)");
     }
 
     public int getRealRoomID(int originalRoomID) throws BiliLiveException {
         try {
-            HttpResponse response = httpHelper.doGet(BILILIVE_ROOT, getRealRoomIDRequestURL(originalRoomID));
+            HttpResponse response = httpHelper.createGetResponse(BILILIVE_ROOT, getRealRoomIDRequestURL(originalRoomID));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {
@@ -78,7 +81,7 @@ public class BiliLiveProtocol {
     public LiveAddresses getLiveAddresses(int roomID) throws BiliLiveException {
         checkRoomID(roomID);
         try {
-            HttpResponse response = httpHelper.doGet(BILILIVE_ROOT, getLiveAddressesRequestURL(roomID));
+            HttpResponse response = httpHelper.createGetResponse(BILILIVE_ROOT, getLiveAddressesRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {
@@ -139,5 +142,27 @@ public class BiliLiveProtocol {
 
     private void checkRoomID(int realRoomID) throws BiliLiveException {
         if (realRoomID < 1) throw new BiliLiveException(I18n.format("exception.roomid_invalid", realRoomID));
+    }
+
+    public void fillRoomInfo(Room room) throws BiliLiveException {
+        checkRoomID(room.getRoomID());
+
+        try {
+            HttpResponse response = httpHelper.createGetResponse(BILILIVE_ROOT, getGetRoomInfoRequestURL(room.getRoomID()));
+            int statusCode = HttpHelper.getStatusCode(response);
+
+            if (statusCode == HTTP_OK) {
+                String jsonString = HttpHelper.responseToString(response);
+                room.fromJson(jsonString);
+                return;
+            }
+            throw BiliLiveException.createHttpError(getString("exception.fill_room"), statusCode);
+        } catch (IOException ex) {
+            throw BiliLiveException.createCausedException(getString("exception.fill_room"), ex);
+        }
+    }
+
+    private String getGetRoomInfoRequestURL(int roomID) {
+        return LIVE_GET_INFO_GET + roomID;
     }
 }

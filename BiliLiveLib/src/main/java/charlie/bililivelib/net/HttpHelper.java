@@ -12,6 +12,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class HttpHelper {
     private HttpClient httpClient;
@@ -26,17 +28,28 @@ public class HttpHelper {
         this.httpClient = httpClient;
     }
 
-    public HttpResponse doPost(HttpHost host, String url, PostArguments args) throws IOException {
+    public HttpResponse createPostResponse(HttpHost host, String url, PostArguments args) throws IOException {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(args.toEntity());
 
         return httpClient.execute(host, httpPost);
     }
 
-    public HttpResponse doGet(HttpHost host, String url) throws IOException {
+    public HttpResponse createGetResponse(HttpHost host, String url) throws IOException {
         HttpGet httpGet = new HttpGet(url);
 
         return httpClient.execute(host, httpGet);
+    }
+
+    public HttpResponse createGetResponse(URL url) throws IOException {
+        HttpGet httpGet;
+        try {
+            httpGet = new HttpGet(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+
+        return httpClient.execute(httpGet);
     }
 
     public static int getStatusCode(HttpResponse response) {
