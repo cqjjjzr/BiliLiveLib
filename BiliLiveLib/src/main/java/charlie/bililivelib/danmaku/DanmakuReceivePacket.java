@@ -3,8 +3,12 @@ package charlie.bililivelib.danmaku;
 import lombok.Getter;
 
 public class DanmakuReceivePacket {
+
+
     public enum Operation {
-        PLAYER_COUNT(new int[]{0, 1, 2});
+        PLAYER_COUNT(new int[]{0, 1, 2}),
+        PLAYER_COMMAND(new int[]{3, 4}),
+        UNKNOWN(new int[]{});
 
         @Getter
         private int[] id;
@@ -18,7 +22,7 @@ public class DanmakuReceivePacket {
                 for (int findID : operation.id)
                     if(id == findID) return operation;
             }
-            return PLAYER_COUNT;
+            return UNKNOWN;
         }
     }
 }

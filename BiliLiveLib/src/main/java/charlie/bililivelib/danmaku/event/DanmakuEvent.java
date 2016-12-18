@@ -7,7 +7,7 @@ import java.util.EventObject;
 @Getter
 public class DanmakuEvent extends EventObject {
     private Kind kind;
-    private String message;
+    private Object param;
 
     /**
      * Constructs a prototypical Event.
@@ -19,13 +19,13 @@ public class DanmakuEvent extends EventObject {
         super(source);
     }
 
-    public DanmakuEvent(Object source, String message, Kind kind) {
+    public DanmakuEvent(Object source, Object param, Kind kind) {
         super(source);
         this.kind = kind;
-        this.message = message;
+        this.param = param;
     }
 
     public enum Kind {
-        JOINED, ERROR, NEW_DANMAKU
+        JOINED, ERROR, NEW_DANMAKU, WATCHER_COUNT, START_STOP
     }
 }

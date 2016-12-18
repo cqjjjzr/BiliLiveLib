@@ -12,6 +12,9 @@ public class ByteArrayOperation {
     }
 
     public static short byteArrayToShort(byte[] b) {
-        return (short) (((b[1] << 8) | b[0] & 0xff));
+        short s0 = (short) b[1];
+        short s1 = (short) b[0];
+        s1 <<= 8;
+        return (short) (s0 | s1);
     }
 }

@@ -30,7 +30,7 @@ public class DanmakuReceiver implements Runnable {
             "livecmt-2.bilibili.com"
     };
     public static final int CMT_PORT = 788;
-    public static final int _30_SECOND = 30 * 1000;
+    public static final int HEARTBEAT_PERIOD = 30 * 1000;
     public static final int RESPONSE_HEADER_SIZE = 16;
 
     @Getter
@@ -67,7 +67,7 @@ public class DanmakuReceiver implements Runnable {
     public void connect() {
         if (status == Status.NOT_CONNECTED){
             thread = new Thread(this);
-            heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + room.getRoomID(), true);
+            heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + room.getRoomID());
             thread.start();
         }
     }
@@ -101,31 +101,36 @@ public class DanmakuReceiver implements Runnable {
                         disconnect();
                     }
                 }
-            }, _30_SECOND);
+            }, 0, HEARTBEAT_PERIOD);
 
             while (status == Status.CONNECTED) {
                 byte[] tempBuf = new byte[4];
-
                 readArray(inputStream, tempBuf, 4);
                 int length = byteArrayToInt(tempBuf);
                 checkValidLength(length);
 
                 readArray(inputStream, tempBuf, 2); // Magic Number
-                readArray(inputStream, tempBuf, 2);
-                short protocolVersion = byteArrayToShort(tempBuf);
-                checkValidProtocolVersion(protocolVersion);
+
+                byte[] shortBuf = new byte[2];
+                readArray(inputStream, shortBuf, 2);
+                short protocolVersion = byteArrayToShort(shortBuf);
+                //checkValidProtocolVersion(protocolVersion);
 
                 readArray(inputStream, tempBuf, 4);
                 int operationID = byteArrayToInt(tempBuf);
 
                 readArray(inputStream, tempBuf, 4); // Magic and params
-
                 int bodyLength = length - RESPONSE_HEADER_SIZE;
                 if (bodyLength == 0) continue;
 
                 operationID -= 1; // I don't know what this means...
 
                 DanmakuReceivePacket.Operation operation = DanmakuReceivePacket.Operation.forID(operationID);
+
+                byte[] bodyBuffer = new byte[bodyLength];
+                readArray(inputStream, bodyBuffer, bodyLength);
+
+                dispatchPacket(operation, bodyBuffer);
             }
         } catch (Exception e) {
             if (status == Status.CONNECTED) {
@@ -133,6 +138,17 @@ public class DanmakuReceiver implements Runnable {
                 fireDanmakuEvent(I18n.format("msg.danmaku_exception_down",
                         e.getClass().getName(), e.getMessage()), DanmakuEvent.Kind.ERROR);
             }
+        }
+    }
+
+    private void dispatchPacket(DanmakuReceivePacket.Operation operation, byte[] bodyBuffer) {
+        switch (operation) {
+            case PLAYER_COUNT:
+                int count = byteArrayToInt(bodyBuffer);
+                fireDanmakuEvent(count, DanmakuEvent.Kind.WATCHER_COUNT);
+                break;
+            case PLAYER_COMMAND:
+                fireDanmakuEvent(new String(bodyBuffer, UTF8), DanmakuEvent.Kind.NEW_DANMAKU);
         }
     }
 
@@ -164,17 +180,19 @@ public class DanmakuReceiver implements Runnable {
         outputStream.write(packet.generate());
     }
 
-    private void readArray(InputStream stream, byte[] buffer, int length) throws IOException {
+    private int readArray(InputStream stream, byte[] buffer, int length) throws IOException {
         if (length > buffer.length)
             throw new IOException("offset + length > buffer.length");
         int readLength = 0;
 
         while (readLength < length) {
             int available = stream.read(buffer, 0, length - readLength);
-            if (available == 0 || available == -1)
+            if (available == 0)
                 throw new IOException("available == 0");
             readLength += available;
         }
+        return readLength;
+        //return stream.read(buffer, 0, length);
     }
 
     private static long generateRandomUID() {
@@ -189,11 +207,36 @@ public class DanmakuReceiver implements Runnable {
         listeners.remove(listener);
     }
 
-    private void fireDanmakuEvent(String message, DanmakuEvent.Kind kind) {
-        DanmakuEvent event = new DanmakuEvent(this, message, kind);
-        for (DanmakuListener listener : listeners) {
-            listener.danmakuEvent(event);
+    private void fireDanmakuEvent(Object param, DanmakuEvent.Kind kind) {
+        DanmakuEvent event = new DanmakuEvent(this, param, kind);
+        switch (kind) {
+            case ERROR:
+                for (DanmakuListener listener : listeners) {
+                    listener.errorEvent(event);
+                }
+                break;
+            case WATCHER_COUNT:
+                for (DanmakuListener listener : listeners) {
+                    listener.watcherCountEvent(event);
+                }
+                break;
+            case JOINED:
+                for (DanmakuListener listener : listeners) {
+                    listener.statusEvent(event);
+                }
+                break;
+            case NEW_DANMAKU:
+                for (DanmakuListener listener : listeners) {
+                    listener.danmakuEvent(event);
+                }
+                break;
+            case START_STOP:
+                for (DanmakuListener listener : listeners) {
+                    listener.startStopEvent(event);
+                }
+                break;
         }
+
     }
 
     public enum Status {
