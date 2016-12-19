@@ -69,7 +69,7 @@ public class DanmakuReceiver implements Runnable {
     }
 
     public void connect() {
-        if (status == Status.NOT_CONNECTED){
+        if (status == Status.NOT_CONNECTED) {
             thread = new Thread(this);
             heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + room.getRoomID());
             thread.start();
@@ -78,13 +78,12 @@ public class DanmakuReceiver implements Runnable {
 
     public void disconnect() {
         heartbeatTimer.cancel();
+        status = Status.NOT_CONNECTED;
         try {
             inputStream.close();
             outputStream.close();
             socket.close();
         } catch (IOException ignored) {}
-        status = Status.NOT_CONNECTED;
-        //TODO Safe disconnect
     }
 
     @Override
