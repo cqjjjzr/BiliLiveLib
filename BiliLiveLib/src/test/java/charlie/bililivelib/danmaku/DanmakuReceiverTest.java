@@ -1,6 +1,7 @@
 package charlie.bililivelib.danmaku;
 
 import charlie.bililivelib.BiliLiveLib;
+import charlie.bililivelib.danmaku.dispatch.DanmakuDispatcher;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.datamodel.Room;
@@ -19,10 +20,12 @@ public class DanmakuReceiverTest {
         LogUtil.init();
     }
 
+    public static final int SIXTEEN_ROOMID = 10313;
     @Test
     public void test() throws Exception {
+        DanmakuDispatcher.init();
         Room room = new Room();
-        room.setRoomID(10313);
+        room.setRoomID(SIXTEEN_ROOMID);
         DanmakuReceiver receiver = new DanmakuReceiver(room);
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();

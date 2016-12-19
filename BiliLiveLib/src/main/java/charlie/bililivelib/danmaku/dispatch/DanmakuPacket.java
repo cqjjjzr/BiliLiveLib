@@ -1,4 +1,4 @@
-package charlie.bililivelib.danmaku;
+package charlie.bililivelib.danmaku.dispatch;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

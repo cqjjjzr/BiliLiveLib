@@ -3,6 +3,9 @@ package charlie.bililivelib.danmaku;
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.GlobalObjects;
 import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
+import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
+import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
+import charlie.bililivelib.danmaku.dispatch.DispatchManager;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 import charlie.bililivelib.datamodel.Room;
@@ -49,6 +52,7 @@ public class DanmakuReceiver implements Runnable {
 
     private OutputStream outputStream;
     private InputStream  inputStream;
+    private Socket       socket;
 
     public DanmakuReceiver(Room room) {
         this(room, generateRandomUID(), CMT_SERVERS[0]);
@@ -74,6 +78,11 @@ public class DanmakuReceiver implements Runnable {
 
     public void disconnect() {
         heartbeatTimer.cancel();
+        try {
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+        } catch (IOException ignored) {}
         status = Status.NOT_CONNECTED;
         //TODO Safe disconnect
     }
@@ -82,7 +91,7 @@ public class DanmakuReceiver implements Runnable {
     public void run() {
         startupThread();
         try {
-            Socket socket = new Socket(commentServer, CMT_PORT);
+            socket = new Socket(commentServer, CMT_PORT);
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
             joinServer();
@@ -147,8 +156,9 @@ public class DanmakuReceiver implements Runnable {
                 int count = byteArrayToInt(bodyBuffer);
                 fireDanmakuEvent(count, DanmakuEvent.Kind.WATCHER_COUNT);
                 break;
+            case UNKNOWN:
             case PLAYER_COMMAND:
-                fireDanmakuEvent(new String(bodyBuffer, UTF8), DanmakuEvent.Kind.NEW_DANMAKU);
+                DispatchManager.instance().dispatch(listeners, new String(bodyBuffer));
         }
     }
 
@@ -223,11 +233,6 @@ public class DanmakuReceiver implements Runnable {
             case JOINED:
                 for (DanmakuListener listener : listeners) {
                     listener.statusEvent(event);
-                }
-                break;
-            case NEW_DANMAKU:
-                for (DanmakuListener listener : listeners) {
-                    listener.danmakuEvent(event);
                 }
                 break;
             case START_STOP:
