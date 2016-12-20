@@ -2,6 +2,9 @@ package charlie.bililivelib.danmaku;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.danmaku.dispatch.DanmakuDispatcher;
+import charlie.bililivelib.danmaku.dispatch.GiveGiftDispatcher;
+import charlie.bililivelib.danmaku.dispatch.StartStopDispatcher;
+import charlie.bililivelib.danmaku.dispatch.WelcomeVipDispatcher;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.datamodel.Room;
@@ -21,12 +24,18 @@ public class DanmakuReceiverTest {
     }
 
     public static final int SIXTEEN_ROOMID = 10313;
+    public static final int CHARLIEJIANG_ROOMID = 39249;
+    public static final int MARCOV_ROOMID = 17029;
+
     @Test
     public void test() throws Exception {
-        DanmakuDispatcher.init();
         Room room = new Room();
-        room.setRoomID(SIXTEEN_ROOMID);
+        room.setRoomID(MARCOV_ROOMID);
         DanmakuReceiver receiver = new DanmakuReceiver(room);
+        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();
         synchronized (this) {
@@ -36,6 +45,12 @@ public class DanmakuReceiverTest {
 
     private class TestListener extends DanmakuAdapter {
         private Logger logger = LogManager.getLogger(BiliLiveLib.class);
+
+        @Override
+        public void welcomeVipEvent(DanmakuEvent event) {
+            logger.log(Level.INFO, "Welcome VIP:" + event.getParam());
+        }
+
         @Override
         public void danmakuEvent(DanmakuEvent event) {
             logger.log(Level.INFO, "New Danmaku:" + event.getParam());
@@ -47,6 +62,11 @@ public class DanmakuReceiverTest {
         }
 
         @Override
+        public void startStopEvent(DanmakuEvent event) {
+            logger.log(Level.INFO, "StartStop:" + event.getParam());
+        }
+
+        @Override
         public void errorEvent(DanmakuEvent event) {
             logger.log(Level.ERROR, event.getParam());
         }
@@ -54,6 +74,11 @@ public class DanmakuReceiverTest {
         @Override
         public void statusEvent(DanmakuEvent event) {
             logger.log(Level.INFO, "STATUS:" + event.getParam());
+        }
+
+        @Override
+        public void giveGiftEvent(DanmakuEvent event) {
+            logger.log(Level.INFO, "Give gift:" + event.getParam());
         }
     }
 }

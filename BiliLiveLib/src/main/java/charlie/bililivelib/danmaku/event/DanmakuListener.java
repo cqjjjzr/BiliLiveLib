@@ -6,4 +6,6 @@ public interface DanmakuListener {
     void errorEvent(DanmakuEvent event);
     void startStopEvent(DanmakuEvent event);
     void statusEvent(DanmakuEvent event);
+    void welcomeVipEvent(DanmakuEvent event);
+    void giveGiftEvent(DanmakuEvent event);
 }

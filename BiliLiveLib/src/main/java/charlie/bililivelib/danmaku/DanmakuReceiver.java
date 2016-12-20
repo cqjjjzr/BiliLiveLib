@@ -46,6 +46,9 @@ public class DanmakuReceiver implements Runnable {
     private String commentServer;
 
     private List<DanmakuListener> listeners = new LinkedList<>();
+    @Getter
+    @Setter
+    private DispatchManager dispatchManager = new DispatchManager();
     private Thread thread;
     private Timer heartbeatTimer;
     private volatile Status status = Status.NOT_CONNECTED;
@@ -157,7 +160,7 @@ public class DanmakuReceiver implements Runnable {
                 break;
             case UNKNOWN:
             case PLAYER_COMMAND:
-                DispatchManager.instance().dispatch(listeners, new String(bodyBuffer));
+                dispatchManager.dispatch(listeners, new String(bodyBuffer), this);
         }
     }
 
@@ -232,11 +235,6 @@ public class DanmakuReceiver implements Runnable {
             case JOINED:
                 for (DanmakuListener listener : listeners) {
                     listener.statusEvent(event);
-                }
-                break;
-            case START_STOP:
-                for (DanmakuListener listener : listeners) {
-                    listener.startStopEvent(event);
                 }
                 break;
         }
