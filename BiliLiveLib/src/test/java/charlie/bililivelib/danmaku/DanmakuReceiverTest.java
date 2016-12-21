@@ -30,11 +30,12 @@ public class DanmakuReceiverTest {
     @Test
     public void test() throws Exception {
         Room room = new Room();
-        room.setRoomID(MARCOV_ROOMID);
+        room.setRoomID(CHARLIEJIANG_ROOMID);
         DanmakuReceiver receiver = new DanmakuReceiver(room);
-        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
+        //receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
+        //receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
+        //receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
+        //receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();
@@ -58,7 +59,7 @@ public class DanmakuReceiverTest {
 
         @Override
         public void watcherCountEvent(DanmakuEvent event) {
-            logger.log(Level.INFO, "WatcherCount:" + event.getParam());
+            //logger.log(Level.INFO, "WatcherCount:" + event.getParam());
         }
 
         @Override

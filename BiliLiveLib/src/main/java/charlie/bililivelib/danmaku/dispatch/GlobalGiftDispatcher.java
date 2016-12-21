@@ -7,16 +7,16 @@ import java.util.List;
 
 public class GlobalGiftDispatcher extends AbstractJSONDispatcher {
     public static final String[] ACCEPTABLE_COMMANDS = {
-            "SYS_GIFT"
+            "SYS_MSG"
     };
 
     @Override
     protected String[] getAcceptableCommands() {
-        return new String[0];
+        return ACCEPTABLE_COMMANDS;
     }
 
     @Override
     public void dispatch(List<DanmakuListener> listeners, JsonObject rootObject, Object source) {
-
+        System.out.println(rootObject);
     }
 }
