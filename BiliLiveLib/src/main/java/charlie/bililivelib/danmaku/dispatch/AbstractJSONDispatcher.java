@@ -1,6 +1,6 @@
 package charlie.bililivelib.danmaku.dispatch;
 
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 import com.google.gson.JsonObject;
 
@@ -24,7 +24,7 @@ public abstract class AbstractJSONDispatcher implements Dispatcher {
     @Override
     public void tryDispatch(List<DanmakuListener> listeners, String body, Object source) {
         if (!isValid(body)) return;
-        JsonObject rootObject = GlobalObjects.instance().getGson().fromJson(body, JsonObject.class);
+        JsonObject rootObject = Globals.get().getGson().fromJson(body, JsonObject.class);
         if (!checkCanDispatch(rootObject))
             return;
 

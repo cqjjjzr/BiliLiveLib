@@ -1,6 +1,6 @@
 package charlie.bililivelib.streamer;
 
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.datamodel.Room;
 import charlie.bililivelib.event.DownloadEvent;
 import charlie.bililivelib.event.DownloadListener;
@@ -55,7 +55,7 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
         try {
             status = Status.STARTING;
             fireDownloadEvent(I18n.getString("msg.stream_starting"), DownloadEvent.Kind.STARTING);
-            HttpResponse response = GlobalObjects.instance().getHttpHelper()
+            HttpResponse response = Globals.get().getHttpHelper()
                     .createGetResponse(liveURL);
 
             if (!path.exists()) path.createNewFile();

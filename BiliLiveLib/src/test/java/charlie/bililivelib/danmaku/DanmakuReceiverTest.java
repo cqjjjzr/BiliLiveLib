@@ -1,10 +1,7 @@
 package charlie.bililivelib.danmaku;
 
 import charlie.bililivelib.BiliLiveLib;
-import charlie.bililivelib.danmaku.dispatch.DanmakuDispatcher;
-import charlie.bililivelib.danmaku.dispatch.GiveGiftDispatcher;
-import charlie.bililivelib.danmaku.dispatch.StartStopDispatcher;
-import charlie.bililivelib.danmaku.dispatch.WelcomeVipDispatcher;
+import charlie.bililivelib.danmaku.dispatch.*;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.datamodel.Room;
@@ -36,7 +33,7 @@ public class DanmakuReceiverTest {
         //receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
         //receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
         //receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();
         synchronized (this) {

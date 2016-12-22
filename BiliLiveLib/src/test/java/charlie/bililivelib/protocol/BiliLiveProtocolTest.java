@@ -1,7 +1,7 @@
 package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.datamodel.Room;
 import charlie.bililivelib.i18n.I18n;
 import charlie.bililivelib.net.datamodel.LiveAddresses;
@@ -60,11 +60,11 @@ public class BiliLiveProtocolTest {
 
     private HttpClient forceReplaceAndReturnHttpClient(HttpClient httpClient) {
         try {
-            Field clientField = GlobalObjects.instance()
+            Field clientField = Globals.get()
                     .getHttpHelper().getClass().getDeclaredField("httpClient");
             clientField.setAccessible(true);
-            HttpClient original = (HttpClient) clientField.get(GlobalObjects.instance().getHttpHelper());
-            clientField.set(GlobalObjects.instance().getHttpHelper(), httpClient);
+            HttpClient original = (HttpClient) clientField.get(Globals.get().getHttpHelper());
+            clientField.set(Globals.get().getHttpHelper(), httpClient);
             return original;
         } catch (Exception e) {
             LogUtil.logException(Level.ERROR, "Error replacing Http Client!", e);

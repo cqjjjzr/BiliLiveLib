@@ -1,7 +1,7 @@
 package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.datamodel.Room;
 import charlie.bililivelib.i18n.I18n;
 import charlie.bililivelib.net.HttpHelper;
@@ -42,7 +42,7 @@ public class BiliLiveProtocol {
     private final Pattern REAL_ROOMID_PATTERN;
 
     public BiliLiveProtocol() {
-        GlobalObjects globalObjects = GlobalObjects.instance();
+        Globals globalObjects = Globals.get();
         BILILIVE_ROOT = globalObjects.getBiliLiveRoot();
         httpHelper = globalObjects.getHttpHelper();
         gson = globalObjects.getGson();

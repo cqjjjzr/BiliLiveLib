@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 
-public class GlobalObjects {
+public class Globals {
     private static final String BILI_LIVE_HOST_ROOT = "live.bilibili.com";
 
     @Getter
@@ -14,7 +14,7 @@ public class GlobalObjects {
     private HttpHelper httpHelper;
     private ThreadLocal<Gson> gson;
 
-    private static GlobalObjects instance;
+    private static Globals instance;
 
     public void init() {
         httpHelper = new HttpHelper();
@@ -24,13 +24,13 @@ public class GlobalObjects {
         gson = ThreadLocal.withInitial(Gson::new);
     }
     
-    public void getGson() {
+    public Gson getGson() {
         return gson.get();
     }
 
-    public static GlobalObjects instance() {
+    public static Globals get() {
         if (instance == null) {
-            instance = new GlobalObjects();
+            instance = new Globals();
             instance.init();
         }
         return instance;

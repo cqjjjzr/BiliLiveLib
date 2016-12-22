@@ -1,7 +1,7 @@
 package charlie.bililivelib.datamodel;
 
 import charlie.bililivelib.BiliLiveException;
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.i18n.I18n;
 import charlie.bililivelib.protocol.datamodel.RoomInfoResponseJson;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class Room {
     private long roomScore;
 
     public void fromJson(String jsonString) throws BiliLiveException {
-        RoomInfoResponseJson jsonObject = GlobalObjects.instance().getGson()
+        RoomInfoResponseJson jsonObject = Globals.get().getGson()
                 .fromJson(jsonString, RoomInfoResponseJson.class);
 
         if (jsonObject.getCode() != RESPONSE_SUCCESS_CODE) {
@@ -61,8 +61,8 @@ public class Room {
 
     private Image downloadImage(String url) throws BiliLiveException {
         try {
-            HttpResponse response = GlobalObjects.instance().getHttpHelper()
-                    .createGetResponse(GlobalObjects.instance().getBiliLiveRoot(),
+            HttpResponse response = Globals.get().getHttpHelper()
+                    .createGetResponse(Globals.get().getBiliLiveRoot(),
                             url);
             Image image = ImageIO.read(response.getEntity().getContent());
             EntityUtils.consume(response.getEntity());

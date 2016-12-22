@@ -1,7 +1,7 @@
 package charlie.bililivelib.danmaku;
 
 import charlie.bililivelib.BiliLiveException;
-import charlie.bililivelib.GlobalObjects;
+import charlie.bililivelib.Globals;
 import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
 import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
 import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
@@ -181,7 +181,7 @@ public class DanmakuReceiver implements Runnable {
     private void joinServer() throws IOException {
         JoinServerJson json = new JoinServerJson(room.getRoomID(), uid);
         writePacket(new DanmakuPacket(DanmakuPacket.Action.JOIN_SERVER,
-                GlobalObjects.instance().getGson().toJson(json)));
+                Globals.get().getGson().toJson(json)));
     }
 
     private void writeHeartbeat() throws IOException {
