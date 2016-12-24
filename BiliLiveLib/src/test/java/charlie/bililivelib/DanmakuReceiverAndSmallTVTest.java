@@ -1,11 +1,14 @@
-package charlie.bililivelib.danmaku;
+package charlie.bililivelib;
 
-import charlie.bililivelib.BiliLiveLib;
-import charlie.bililivelib.danmaku.dispatch.*;
+import charlie.bililivelib.danmaku.DanmakuReceiver;
+import charlie.bililivelib.danmaku.dispatch.GlobalAnnounceDispatcher;
+import charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.datamodel.Room;
+import charlie.bililivelib.datamodel.SmallTV;
 import charlie.bililivelib.i18n.I18n;
+import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DanmakuReceiverTest {
+public class DanmakuReceiverAndSmallTVTest {
     @BeforeClass
     public static void init() {
         I18n.init();
@@ -34,6 +37,7 @@ public class DanmakuReceiverTest {
         //receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
         //receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new GlobalAnnounceDispatcher());
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();
         synchronized (this) {
@@ -43,6 +47,7 @@ public class DanmakuReceiverTest {
 
     private class TestListener extends DanmakuAdapter {
         private Logger logger = LogManager.getLogger(BiliLiveLib.class);
+        private SmallTVProtocol smallTVProtocol = new SmallTVProtocol();
 
         @Override
         public void welcomeVipEvent(DanmakuEvent event) {
@@ -77,6 +82,17 @@ public class DanmakuReceiverTest {
         @Override
         public void giveGiftEvent(DanmakuEvent event) {
             logger.log(Level.INFO, "Give gift:" + event.getParam());
+        }
+
+        @Override
+        public void globalGiftEvent(DanmakuEvent event) {
+            logger.log(Level.INFO, "Global SmallTV:" + event.getParam());
+            smallTVProtocol.getCurrentSmallTV(((SmallTV) event.getParam()).getRealRoomID());
+        }
+
+        @Override
+        public void globalAnnounceEvent(DanmakuEvent event) {
+            logger.log(Level.INFO, "GlobalAnnounce:" + event.getParam());
         }
     }
 }

@@ -35,4 +35,14 @@ public class DanmakuAdapter implements DanmakuListener {
     public void giveGiftEvent(DanmakuEvent event) {
 
     }
+
+    @Override
+    public void globalGiftEvent(DanmakuEvent event) {
+
+    }
+
+    @Override
+    public void globalAnnounceEvent(DanmakuEvent event) {
+
+    }
 }

@@ -8,4 +8,6 @@ public interface DanmakuListener {
     void statusEvent(DanmakuEvent event);
     void welcomeVipEvent(DanmakuEvent event);
     void giveGiftEvent(DanmakuEvent event);
+    void globalGiftEvent(DanmakuEvent event);
+    void globalAnnounceEvent(DanmakuEvent event);
 }
