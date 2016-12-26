@@ -2,18 +2,17 @@ package charlie.bililivelib.util;
 
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.session.Session;
 import lombok.Data;
 import org.apache.http.client.HttpClient;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.Level;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -43,20 +42,6 @@ public class OCRUtilTest {
         }
     }
 
-    private HttpClient forceReplaceAndReturnHttpClient(HttpClient httpClient) {
-        try {
-            Field clientField = Globals.get()
-                    .getHttpHelper().getClass().getDeclaredField("httpClient");
-            clientField.setAccessible(true);
-            HttpClient original = (HttpClient) clientField.get(Globals.get().getHttpHelper());
-            clientField.set(Globals.get().getHttpHelper(), httpClient);
-            return original;
-        } catch (Exception e) {
-            LogUtil.logException(Level.ERROR, "Error replacing Http Client!", e);
-        }
-        return null;
-    }
-
     @Ignore
     public void grabKey() throws Exception {
         BasicCookieStore store = new BasicCookieStore();
@@ -66,12 +51,12 @@ public class OCRUtilTest {
         store.addCookie(new BCookie("SESSDATA", SESS_DATA, "live.bilibili.com"));
         store.addCookie(new BCookie("ck_pv", CK_PV, "live.bilibili.com"));
         store.addCookie(new BCookie("DedeUserID__ckMd5", DEDE_USER_ID_CKMD5, "live.bilibili.com"));
-        forceReplaceAndReturnHttpClient(client);
+        Session tempSession = new Session(client);
         for(int i = 0;i < 50; i++) {
             File file = new File("/captcha/captcha" + i + ".png");
             file.mkdirs();
             if (!file.exists()) file.createNewFile();
-            ImageIO.write(ImageIO.read(HttpHelper.responseToInputStream(Globals.get().getHttpHelper()
+            ImageIO.write(ImageIO.read(HttpHelper.responseToInputStream(tempSession.getHttpHelper()
                     .createGetResponse(Globals.get().getBiliLiveRoot(), "/freeSilver/getCaptcha"))), "png",
                     file);
             System.out.println(file.getAbsolutePath());

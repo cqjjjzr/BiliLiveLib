@@ -1,4 +1,4 @@
-package charlie.bililivelib.protocol.datamodel;
+package charlie.bililivelib.room.datamodel;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.*;

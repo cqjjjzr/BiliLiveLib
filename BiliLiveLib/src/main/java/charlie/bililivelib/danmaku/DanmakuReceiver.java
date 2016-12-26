@@ -8,8 +8,8 @@ import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
 import charlie.bililivelib.danmaku.dispatch.DispatchManager;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
-import charlie.bililivelib.datamodel.Room;
-import charlie.bililivelib.i18n.I18n;
+import charlie.bililivelib.room.Room;
+import charlie.bililivelib.util.I18n;
 import lombok.Getter;
 import lombok.Setter;
 

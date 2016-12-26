@@ -1,9 +1,9 @@
 package charlie.bililivelib.streamer;
 
 import charlie.bililivelib.BiliLiveLib;
-import charlie.bililivelib.event.DownloadEvent;
-import charlie.bililivelib.event.DownloadListener;
-import charlie.bililivelib.i18n.I18n;
+import charlie.bililivelib.streamer.event.DownloadEvent;
+import charlie.bililivelib.streamer.event.DownloadListener;
+import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

@@ -1,6 +1,6 @@
 package charlie.bililivelib.datamodel;
 
-import charlie.bililivelib.i18n.I18n;
+import charlie.bililivelib.util.I18n;
 
 public enum UserGuardLevel {
     DEFAULT, GUARD, MASTER;

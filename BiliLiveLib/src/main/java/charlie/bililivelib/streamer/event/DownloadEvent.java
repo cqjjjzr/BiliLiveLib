@@ -1,4 +1,4 @@
-package charlie.bililivelib.event;
+package charlie.bililivelib.streamer.event;
 
 import lombok.Getter;
 import lombok.ToString;

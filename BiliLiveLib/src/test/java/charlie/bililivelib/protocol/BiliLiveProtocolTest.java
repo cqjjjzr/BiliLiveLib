@@ -2,45 +2,52 @@ package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
-import charlie.bililivelib.datamodel.Room;
-import charlie.bililivelib.i18n.I18n;
-import charlie.bililivelib.net.datamodel.LiveAddresses;
+import charlie.bililivelib.util.I18n;
+import charlie.bililivelib.room.Room;
+import charlie.bililivelib.session.Session;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.Level;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BiliLiveProtocolTest {
-    private BiliLiveProtocol protocol;
+    public static final int SIXTEEN_ROOM_ID = 148;
+    public static final int SIXTEEN_REAL_ROOM_ID = 10313;
+    public static final int INVALID_ROOM_ID = 165454948;
+    public static final int SHANXING_ROOM_ID = 459985;
+    private Room room;
+    private static Session session;
+    private static Session invalidSession;
 
     @BeforeClass
     public static void init() {
         I18n.init();
         LogUtil.init();
+        session = new Session(Globals.get().getConnectionPool());
+        invalidSession = new Session(createInvalidHttpClient());
     }
 
-    @org.junit.Before
-    public void setUp() throws Exception {
-        protocol = new BiliLiveProtocol();
+    private static HttpClient createInvalidHttpClient() {
+        return HttpClientBuilder.create().setProxy(new HttpHost("127.0.0.1", 33112)).build();
     }
 
     @org.junit.Test
     public void getRealRoomID() throws Exception {
-        int roomID = protocol.getRealRoomID(148);
-        assertEquals(10313, roomID);
+        room = new Room(SIXTEEN_ROOM_ID, session);
+        assertEquals(SIXTEEN_REAL_ROOM_ID, room.getRoomID());
     }
 
     @org.junit.Test
     public void getRealRoomIDInvalid() throws Exception {
         try {
-            protocol.getRealRoomID(1487152472);
+            room = new Room(INVALID_ROOM_ID, session);
         } catch (BiliLiveException ex){
             LogUtil.logException(Level.ERROR, "Error getting room id!", ex);
         }
@@ -49,58 +56,31 @@ public class BiliLiveProtocolTest {
     @org.junit.Test
     public void getRealRoomIDNetworkError() throws Exception {
         try {
-            HttpClient client = createInvalidHttpClient();
-            HttpClient origin = forceReplaceAndReturnHttpClient(client);
-            protocol.getRealRoomID(148);
-            forceReplaceAndReturnHttpClient(client);
+            room = new Room(SIXTEEN_ROOM_ID, invalidSession);
         } catch (BiliLiveException ex){
             LogUtil.logException(Level.ERROR, "Error getting room id!", ex);
         }
     }
 
-    private HttpClient forceReplaceAndReturnHttpClient(HttpClient httpClient) {
-        try {
-            Field clientField = Globals.get()
-                    .getHttpHelper().getClass().getDeclaredField("httpClient");
-            clientField.setAccessible(true);
-            HttpClient original = (HttpClient) clientField.get(Globals.get().getHttpHelper());
-            clientField.set(Globals.get().getHttpHelper(), httpClient);
-            return original;
-        } catch (Exception e) {
-            LogUtil.logException(Level.ERROR, "Error replacing Http Client!", e);
-        }
-        return null;
-    }
-
-    private HttpClient createInvalidHttpClient() {
-        return HttpClientBuilder.create().setProxy(new HttpHost("127.0.0.1", 33112)).build();
-    }
-
     @Test
     public void getLiveAddresses() throws Exception {
-        System.out.println(protocol.getLiveAddresses(294140));
-    }
-
-    @org.junit.Test
-    public void getLiveAddressesInvalid() throws Exception {
-        try {
-            LiveAddresses addresses = protocol.getLiveAddresses(1744048751);
-            assertTrue(addresses.getLineMain().isEmpty());
-        } catch (BiliLiveException ex){
-            LogUtil.logException(Level.ERROR, "Failed getting live address!", ex);
-        }
+        Room room = new Room(SIXTEEN_ROOM_ID, session);
+        System.out.println(room.getLiveAddresses());
     }
 
     @org.junit.Test
     public void getRoomInfo() throws Exception {
         try {
-            Room room = new Room();
-            room.setRoomID(459985);
-            protocol.fillRoomInfo(room);
+            Room room = new Room(SHANXING_ROOM_ID, session);
             assertEquals("山新直播间", room.getRoomTitle());
             System.out.println(room);
         } catch (BiliLiveException ex){
             LogUtil.logException(Level.ERROR, "Error getting room id!", ex);
         }
+    }
+
+    @AfterClass
+    public static void destroy(){
+        System.out.println(((PoolingHttpClientConnectionManager)Globals.get().getConnectionPool()).getTotalStats());
     }
 }

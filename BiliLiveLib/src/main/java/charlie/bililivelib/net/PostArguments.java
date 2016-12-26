@@ -1,4 +1,4 @@
-package charlie.bililivelib.net.datamodel;
+package charlie.bililivelib.net;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;

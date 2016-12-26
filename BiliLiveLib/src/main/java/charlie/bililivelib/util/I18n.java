@@ -1,4 +1,4 @@
-package charlie.bililivelib.i18n;
+package charlie.bililivelib.util;
 
 import java.text.MessageFormat;
 import java.util.HashMap;

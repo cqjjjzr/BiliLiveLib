@@ -1,7 +1,6 @@
 package charlie.bililivelib.net;
 
 import charlie.bililivelib.BiliLiveLib;
-import charlie.bililivelib.net.datamodel.PostArguments;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
