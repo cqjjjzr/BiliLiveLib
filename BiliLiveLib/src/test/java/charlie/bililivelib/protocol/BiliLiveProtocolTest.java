@@ -2,12 +2,14 @@ package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
-import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.session.Session;
+import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.http.HttpHost;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.Level;
@@ -22,20 +24,27 @@ public class BiliLiveProtocolTest {
     public static final int SIXTEEN_REAL_ROOM_ID = 10313;
     public static final int INVALID_ROOM_ID = 165454948;
     public static final int SHANXING_ROOM_ID = 459985;
-    private Room room;
     private static Session session;
     private static Session invalidSession;
+    private Room room;
 
     @BeforeClass
     public static void init() {
         I18n.init();
         LogUtil.init();
         session = new Session(Globals.get().getConnectionPool());
-        invalidSession = new Session(createInvalidHttpClient());
+        CookieStore tempStore = new BasicCookieStore();
+        invalidSession = new Session(createInvalidHttpClient(tempStore), tempStore);
     }
 
-    private static HttpClient createInvalidHttpClient() {
-        return HttpClientBuilder.create().setProxy(new HttpHost("127.0.0.1", 33112)).build();
+    private static HttpClient createInvalidHttpClient(CookieStore cookieStore) {
+        return HttpClientBuilder.create().setProxy(new HttpHost("127.0.0.1", 33112))
+                .setDefaultCookieStore(cookieStore).build();
+    }
+
+    @AfterClass
+    public static void destroy() {
+        System.out.println(((PoolingHttpClientConnectionManager) Globals.get().getConnectionPool()).getTotalStats());
     }
 
     @org.junit.Test
@@ -77,10 +86,5 @@ public class BiliLiveProtocolTest {
         } catch (BiliLiveException ex){
             LogUtil.logException(Level.ERROR, "Error getting room id!", ex);
         }
-    }
-
-    @AfterClass
-    public static void destroy(){
-        System.out.println(((PoolingHttpClientConnectionManager)Globals.get().getConnectionPool()).getTotalStats());
     }
 }

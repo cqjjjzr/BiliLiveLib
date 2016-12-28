@@ -51,7 +51,7 @@ public class OCRUtilTest {
         store.addCookie(new BCookie("SESSDATA", SESS_DATA, "live.bilibili.com"));
         store.addCookie(new BCookie("ck_pv", CK_PV, "live.bilibili.com"));
         store.addCookie(new BCookie("DedeUserID__ckMd5", DEDE_USER_ID_CKMD5, "live.bilibili.com"));
-        Session tempSession = new Session(client);
+        Session tempSession = new Session(client, store);
         for(int i = 0;i < 50; i++) {
             File file = new File("/captcha/captcha" + i + ".png");
             file.mkdirs();
@@ -65,12 +65,6 @@ public class OCRUtilTest {
 
     @Data
     private class BCookie implements Cookie {
-        public BCookie(String name, String value, String domain) {
-            this.name = name;
-            this.value = value;
-            this.domain = domain;
-        }
-
         private String name;
         private String value;
         private String comment;
@@ -82,6 +76,12 @@ public class OCRUtilTest {
         private int[] ports;
         private boolean secure;
         private int version;
+
+        public BCookie(String name, String value, String domain) {
+            this.name = name;
+            this.value = value;
+            this.domain = domain;
+        }
 
         @Override
         public boolean isExpired(Date date) {
