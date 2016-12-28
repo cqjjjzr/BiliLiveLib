@@ -71,7 +71,7 @@ public class Session {
 
         encoder.writeObject(cookies.size());
         for (Cookie cookie : cookies) {
-            encoder.writeObject(cookie);
+            encoder.writeObject(cookie instanceof PersistenceCookie ? cookie : new PersistenceCookie(cookie));
         }
         encoder.close();
 
@@ -104,7 +104,7 @@ public class Session {
         BasicClientCookie cookie = new BasicClientCookie((String) name, (String) value);
 
         cookie.setDomain((String) domain);
-        cookie.setExpiryDate(new Date((Long) expiryDate));
+        cookie.setExpiryDate(expiryDate == null ? null : new Date((Long) expiryDate));
         cookie.setComment((String) comment);
         cookie.setPath((String) path);
         cookie.setSecure((Boolean) secure);
@@ -116,7 +116,7 @@ public class Session {
         @Override
         protected Expression instantiate(Object oldInstance, Encoder out) {
             Cookie cookie = (Cookie) oldInstance;
-            return new Expression(oldInstance, Session.class, "createCookie", new Object[]{
+            return new Expression(oldInstance, PersistenceCookie.class, "new", new Object[]{
                     cookie.getName(),
                     cookie.getValue(),
                     cookie.getDomain(),
