@@ -11,8 +11,11 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import javax.net.ssl.SSLContext;
+
 @Getter
 public class Session {
+    private static final SSLContext BILIBILI_SSL_CONTEXT = Globals.get().getBilibiliSSLContext();
     private HttpHelper httpHelper;
     @Getter(AccessLevel.PROTECTED)
     private CookieStore cookieStore;
@@ -37,6 +40,7 @@ public class Session {
         HttpClientBuilder builder = HttpClientBuilder.create()
                 .setUserAgent("BiliLiveLib " + BiliLiveLib.VERSION)
                 .setConnectionManager(clientConnectionManager)
+                .setSSLContext(BILIBILI_SSL_CONTEXT)
                 .setDefaultCookieStore(cookieStore);
         httpHelper.init(builder.build());
     }

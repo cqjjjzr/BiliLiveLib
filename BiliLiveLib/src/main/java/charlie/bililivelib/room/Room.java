@@ -3,10 +3,10 @@ package charlie.bililivelib.room;
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.datamodel.UserGuardLevel;
-import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.room.datamodel.RoomInfoResponseJson;
 import charlie.bililivelib.session.Session;
+import charlie.bililivelib.util.I18n;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,13 +28,11 @@ import static java.net.HttpURLConnection.HTTP_OK;
 @Getter
 @ToString
 public class Room {
+    public static final String LIVE_ADDRESSES_MF_GET = "/api/playurl?cid={0,number,###}&player=1&quality=0";
     private static final int RESPONSE_SUCCESS_CODE = 0;
-
     private static final Pattern REAL_ROOMID_PATTERN = Pattern.compile("(?<=var ROOMID = )(\\d+)(?=;)");
     private static final String REAL_ROOMID_GET = "/";
     private static final String LIVE_GET_INFO_GET = "/live/getInfo?roomid=";
-    public static final String LIVE_ADDRESSES_MF_GET = "/api/playurl?cid={0,number,###}&player=1&quality=0";
-
     private int roomID;
     private String roomTitle;
     private Image coverImage;
@@ -62,8 +60,7 @@ public class Room {
 
     private void fillRealRoomID() throws BiliLiveException {
         try {
-            HttpResponse response = session.getHttpHelper().createGetResponse(
-                    Globals.get().getBiliLiveRoot(), getRealRoomIDRequestURL(roomID));
+            HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getRealRoomIDRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {
@@ -94,9 +91,7 @@ public class Room {
 
     private void fillRoomInfo() throws BiliLiveException {
         try {
-            HttpResponse response = session.getHttpHelper().createGetResponse(
-                    Globals.get().getBiliLiveRoot(),
-                    getRoomInfoRequestURL(roomID));
+            HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getRoomInfoRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {
@@ -142,9 +137,7 @@ public class Room {
 
     private Image downloadImage(String url) throws BiliLiveException {
         try {
-            HttpResponse response = session.getHttpHelper().createGetResponse(
-                    Globals.get().getBiliLiveRoot(),
-                    url);
+            HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(url);
             Image image = ImageIO.read(response.getEntity().getContent());
             EntityUtils.consume(response.getEntity());
             return image;
@@ -155,9 +148,7 @@ public class Room {
 
     public LiveAddresses getLiveAddresses() throws BiliLiveException {
         try {
-            HttpResponse response = session.getHttpHelper().createGetResponse(
-                    Globals.get().getBiliLiveRoot(),
-                    getLiveAddressesRequestURL(roomID));
+            HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getLiveAddressesRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {

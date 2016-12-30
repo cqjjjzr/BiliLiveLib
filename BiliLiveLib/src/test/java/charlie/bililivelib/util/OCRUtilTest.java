@@ -1,6 +1,5 @@
 package charlie.bililivelib.util;
 
-import charlie.bililivelib.Globals;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.session.Session;
 import lombok.Data;
@@ -57,7 +56,7 @@ public class OCRUtilTest {
             file.mkdirs();
             if (!file.exists()) file.createNewFile();
             ImageIO.write(ImageIO.read(HttpHelper.responseToInputStream(tempSession.getHttpHelper()
-                    .createGetResponse(Globals.get().getBiliLiveRoot(), "/freeSilver/getCaptcha"))), "png",
+                            .createGetBiliLiveHost("/freeSilver/getCaptcha"))), "png",
                     file);
             System.out.println(file.getAbsolutePath());
         }
