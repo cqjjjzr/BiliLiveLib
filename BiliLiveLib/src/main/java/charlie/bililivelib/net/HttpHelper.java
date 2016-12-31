@@ -2,6 +2,7 @@ package charlie.bililivelib.net;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,6 +20,7 @@ import java.net.URL;
 public class HttpHelper {
     private static final SSLContext BILIBILI_SSL_CONTEXT = Globals.get().getBilibiliSSLContext();
     private static final HttpHost BILI_LIVE_ROOT = Globals.get().getBiliLiveRoot();
+    @Getter
     private HttpClient httpClient;
 
     public static int getStatusCode(HttpResponse response) {
@@ -38,6 +40,7 @@ public class HttpHelper {
     public void init() {
         HttpClientBuilder builder = HttpClientBuilder.create()
                 .setUserAgent("BiliLiveLib " + BiliLiveLib.VERSION)
+                .setProxy(new HttpHost("127.0.0.1", 8888))
                 .setSSLContext(BILIBILI_SSL_CONTEXT);
         init(builder.build());
     }

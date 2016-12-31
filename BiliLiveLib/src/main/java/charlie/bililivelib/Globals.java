@@ -44,7 +44,7 @@ public class Globals {
         noSessionHttpHelper = new HttpHelper();
         noSessionHttpHelper.init();
 
-        biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT);
+        biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT, 80, "http");
         //Visit bilibili passport via https. 443 is the https port.
         biliPassportHttpsRoot = new HttpHost(BILI_PASSPORT_HOST_ROOT, 443, "https");
         gson = ThreadLocal.withInitial(Gson::new);

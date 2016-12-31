@@ -2,11 +2,10 @@ package charlie.bililivelib;
 
 import charlie.bililivelib.net.BilibiliTrustStrategy;
 import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.net.PostArguments;
 import org.apache.http.HttpResponse;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.io.FileInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -18,12 +17,12 @@ public class HttpTest {
     public void getCaptcha() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
         httpHelper.init();
-        HttpResponse response = httpHelper.createGetResponse(
+        HttpResponse response = httpHelper.createPostResponse(
                 Globals.get().getBiliPassportHttpsRoot(),
-                "/captcha"
+                "/login/dologin",
+                new PostArguments()
         );
-        ImageIO.write(ImageIO.read(HttpHelper.responseToInputStream(response)), "png",
-                new File("captchaLogin.png"));
+        System.out.println(HttpHelper.responseToString(response));
     }
 
     @Test
