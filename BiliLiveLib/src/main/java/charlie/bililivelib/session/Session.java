@@ -28,7 +28,6 @@ import javax.net.ssl.SSLContext;
 import java.awt.*;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 public class Session {
@@ -73,7 +72,8 @@ public class Session {
 
     public Image getCaptcha() throws BiliLiveException {
         try {
-            activateCookies();
+            //activateCookies();
+            //↑导致404
 
             HttpResponse response = httpHelper.createGetResponse(Globals.get().getBiliPassportHttpsRoot(),
                     generateCaptchaGet(CAPTCHA_GET));
@@ -97,23 +97,15 @@ public class Session {
             String passwordPost = generateRSAPassword(password, rsaKeyInfo);
 
             HttpPost httpPost = new HttpPost(LOGIN_POST);
-            /*httpPost.setEntity(new PostArguments()
+            httpPost.setEntity(new PostArguments()
                     .add("act", "login")
-                    .add("gourl", "https://passport.bilibili.com/site/site.html")
+                    .add("gourl", "")
                     .add("keeptime", String.valueOf(2592000))
                     .add("userid", emailOrUsername)
                     .add("pwd", passwordPost)
                     .add("vdcode", captcha)
-            .toEntity());*/
-            httpPost.setHeader("Origin", "https://passport.bilibili.com");
-            httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-            httpPost.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-            httpPost.setHeader("Referer",
-                    "https://passport.bilibili.com/login?gourl=https%3A%2F%2Fpassport.bilibili.com%2Fsite%2Fsite.html");
-            httpPost.setHeader("Cache-Control", "max-age=0");
-            httpPost.setHeader("Accept-Encoding", "gzip, deflate, br");
+                    .toEntity());
 
-            httpHelper.getHttpClient().getConnectionManager().closeIdleConnections(0, TimeUnit.SECONDS);
             HttpResponse response = httpHelper.getHttpClient().execute(httpPost);
             System.out.println(HttpHelper.responseToString(response));
             return null;
@@ -122,13 +114,6 @@ public class Session {
         } catch (IOException e) {
             throw BiliLiveException.createCausedException(I18n.getString("session.exception_login"), e);
         }
-    }
-
-    private void activateLogin() throws IOException {
-        EntityUtils.consume(httpHelper.createGetResponse(new HttpHost("data.bilibili.com", 443, "https"),
-                MessageFormat.format(ACTIVATE_BUVID_GET,
-                        System.currentTimeMillis() / 1000,
-                        System.currentTimeMillis())).getEntity());
     }
 
     private void activateCookies() throws IOException {
@@ -142,7 +127,10 @@ public class Session {
         EntityUtils.consume(httpHelper.createGetResponse(Globals.get().getBiliPassportHttpsRoot(),
                 ACTIVATE_LOGIN_GET).getEntity());
 
-        activateLogin();
+        EntityUtils.consume(httpHelper.createGetResponse(new HttpHost("data.bilibili.com", 443, "https"),
+                MessageFormat.format(ACTIVATE_BUVID_GET,
+                        System.currentTimeMillis() / 1000,
+                        System.currentTimeMillis())).getEntity());
     }
 
     private String generateRSAPassword(String password, RSAKeyInfo rsaKeyInfo) throws BiliLiveException {
