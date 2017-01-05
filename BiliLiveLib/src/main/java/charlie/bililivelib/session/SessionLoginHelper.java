@@ -1,7 +1,9 @@
 package charlie.bililivelib.session;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import lombok.AccessLevel;
@@ -13,7 +15,8 @@ import org.xml.sax.SAXException;
 import java.awt.*;
 import java.io.IOException;
 
-import static charlie.bililivelib.session.SessionLoginHelper.LoginStatus.*;
+import static charlie.bililivelib.session.SessionLoginHelper.LoginStatus.SUCCESS;
+import static charlie.bililivelib.session.SessionLoginHelper.LoginStatus.UNKNOWN;
 
 @Data
 public class SessionLoginHelper {
@@ -31,9 +34,6 @@ public class SessionLoginHelper {
     private String email;
     private String password;
 
-    @Setter(AccessLevel.PRIVATE)
-    private boolean isCompleted;
-
     public SessionLoginHelper(Session session, String email, String password) {
         this(session, email, password, DEFALUE_LOGIN_TIMEOUT_MILLIS);
     }
@@ -44,25 +44,37 @@ public class SessionLoginHelper {
         this.password = password;
         this.loginTimeoutMillis = loginTimeoutMillis;
         webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
+        avoidUselessErrorMessages();
     }
 
     public void startLogin() throws IOException, SAXException {
-        if (isCompleted) throw new IllegalStateException("Already logged in");
         miniLoginPage = webClient.getPage("https://passport.bilibili.com/ajax/miniLogin/minilogin");
         miniLoginPage.getElementById("login-username").setAttribute("value", email);
         miniLoginPage.getElementById("login-passwd").setAttribute("value", password);
-
         miniLoginPage.getHtmlElementById("login-submit").click();
     }
 
+    private void avoidUselessErrorMessages() {
+        webClient.setIncorrectnessListener(new IncorrectnessListenerImpl() {
+            @Override
+            public void notify(String message, Object origin) {
+                if (!message.contains("application/javascript"))
+                    super.notify(message, origin);
+                //avoid error messages like:
+                // "[main] WARN  c.g.h.IncorrectnessListenerImpl -
+                // Expected content type of 'application/javascript' or 'application/ecmascript'
+                // for remotely loaded JavaScript element
+                // at 'https://data.bilibili.com/rec.js', but got 'text/html'."
+            }
+        });
+    }
+
     public Image getCaptcha() throws IOException {
-        if (isCompleted) throw new IllegalStateException("Already logged in");
         HtmlImage image = (HtmlImage) miniLoginPage.getByXPath("//img[@class='captcha-img']").get(0);
         return image.getImageReader().read(0);
     }
 
     public void loginWithCaptcha(String captcha) throws IOException, SAXException {
-        if (isCompleted) throw new IllegalStateException("Already logged in");
         miniLoginPage.getElementById("login-username").setAttribute("value", email);
         miniLoginPage.getElementById("login-passwd").setAttribute("value", password);
         miniLoginPage.getElementById("login-captcha").setAttribute("value", captcha);
@@ -70,27 +82,26 @@ public class SessionLoginHelper {
 
         //WARNING: USED Experimental API HERE!
         webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
-
-        isCompleted = true;
     }
 
     public LoginStatus getLoginStatus() {
-        if (isCompleted) return NOT_COMPLETED;
         if (checkSuccess())
             return SUCCESS;
 
-        //Due to Java's limit, we must use 1 element array to storage result.
-        final LoginStatus[] result = {UNKNOWN};
+        LoginStatus result = UNKNOWN;
 
-        //find elements like : <p class="message" for="captcha">验证码错误</p>
-        miniLoginPage.getElementsByTagName("p")
-                .stream()
-                .filter(domElement -> (domElement.getAttribute("class").equals("message")
-                        && !domElement.getTextContent().trim().isEmpty()))
-                .forEach(domElement ->
-                        result[0] = LoginStatus.forName(domElement.getTextContent().trim()));
+        for (DomElement domElement : miniLoginPage.getElementsByTagName("p")) {
+            if (isValidMessageElement(domElement)) {
+                result = LoginStatus.forName(domElement.getTextContent().trim());
+            }
+        }
 
-        return result[0];
+        return result;
+    }
+
+    private boolean isValidMessageElement(DomElement domElement) {
+        return domElement.getAttribute("class").equals("message")
+                && !domElement.getTextContent().trim().isEmpty();
     }
 
     private boolean checkSuccess() {
