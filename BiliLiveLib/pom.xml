@@ -51,6 +51,11 @@
             <artifactId>htmlunit</artifactId>
             <version>2.23</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -2,6 +2,7 @@ package charlie.bililivelib.streamer.event;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.jetbrains.annotations.Nls;
 
 import java.util.EventObject;
 
@@ -15,7 +16,7 @@ public class DownloadEvent extends EventObject {
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if sourc;e is null.
+     * @throws IllegalArgumentException if source is null.
      */
     public DownloadEvent(Object source) {
         super(source);
@@ -23,7 +24,7 @@ public class DownloadEvent extends EventObject {
         kind = Kind.OTHER;
     }
 
-    public DownloadEvent(Object source, String message, Kind kind) {
+    public DownloadEvent(Object source, @Nls String message, Kind kind) {
         super(source);
         this.message = message;
         this.kind = kind;

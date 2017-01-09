@@ -1,5 +1,7 @@
 package charlie.bililivelib.util;
 
+import org.jetbrains.annotations.Contract;
+
 import java.awt.image.BufferedImage;
 
 public class CaptchaUtil {
@@ -19,6 +21,7 @@ public class CaptchaUtil {
      * @param image Image to calculate captcha.
      * @return Calculated value.
      */
+    @Contract(pure = true)
     public int evalCalcCaptcha(BufferedImage image) {
         String str = ocrUtil.ocrCalcCaptcha(image);
         if (str == null) return -1;

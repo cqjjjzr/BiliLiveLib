@@ -41,7 +41,7 @@ public class Session {
     private void initHttpHelper(HttpClientConnectionManager clientConnectionManager) {
         cookieStore = new BasicCookieStore();
         HttpClientBuilder builder = HttpClientBuilder.create()
-                .setUserAgent("BiliLiveLib " + BiliLiveLib.VERSION)
+                .setUserAgent(BiliLiveLib.USER_AGENT)
                 .setConnectionManager(clientConnectionManager)
                 .setSSLContext(BILIBILI_SSL_CONTEXT)
                 .setDefaultCookieStore(cookieStore);

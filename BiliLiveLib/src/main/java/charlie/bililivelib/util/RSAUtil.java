@@ -1,6 +1,8 @@
 package charlie.bililivelib.util;
 
 import charlie.bililivelib.BiliLiveException;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -27,7 +29,8 @@ public class RSAUtil {
         }
     }
 
-    public static String encrypt(byte[] data, String key) throws BiliLiveException {
+    @Contract(pure = true)
+    public static String encrypt(byte[] data, @NonNls String key) throws BiliLiveException {
         try {
             byte[] keyBytes = Base64.getDecoder().decode(key);
 

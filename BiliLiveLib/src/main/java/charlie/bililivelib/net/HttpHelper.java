@@ -39,7 +39,7 @@ public class HttpHelper {
 
     public void init() {
         HttpClientBuilder builder = HttpClientBuilder.create()
-                .setUserAgent("BiliLiveLib " + BiliLiveLib.VERSION)
+                .setUserAgent(BiliLiveLib.USER_AGENT)
                 .setProxy(new HttpHost("127.0.0.1", 8888))
                 .setSSLContext(BILIBILI_SSL_CONTEXT);
         init(builder.build());

@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -51,7 +52,8 @@ public class Room {
     @Getter(AccessLevel.PRIVATE)
     private Session session;
 
-    public Room(int roomID, Session session) throws BiliLiveException {
+    public Room(int roomID, @NotNull Session session) throws BiliLiveException {
+        if (roomID < 0) throw new IllegalArgumentException("Room id < 0");
         this.roomID = roomID;
         this.session = session;
         fillRealRoomID();

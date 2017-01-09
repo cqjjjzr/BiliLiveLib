@@ -1,5 +1,9 @@
 package charlie.bililivelib.util;
 
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +24,14 @@ public class I18n {
         }
     }
 
-    public static String getString(String key) {
+    @Nls
+    public static String getString(@NonNls @NotNull String key) {
         return strings.get(key);
     }
 
-    public static String format(String key, Object... arguments) {
+    @NotNull
+    public static String format(@NonNls @NotNull String key,
+                                @NonNls @NotNull Object... arguments) {
         return MessageFormat.format(strings.get(key), arguments);
     }
 }

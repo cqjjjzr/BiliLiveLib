@@ -1,11 +1,11 @@
 package charlie.bililivelib.streamer;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.streamer.event.DownloadEvent;
 import charlie.bililivelib.streamer.event.DownloadListener;
 import charlie.bililivelib.util.I18n;
-import charlie.bililivelib.net.HttpHelper;
 import org.apache.http.HttpResponse;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
                     if (status == Status.STOPPING) break;
                     fileStream.write(buffer, 0, readLength);
                 }
-                if (status == Status.STARTED) { //自然退出
+                if (status == Status.STARTED) { // Exits normally
                     fireDownloadEvent(I18n.format("msg.stream_stopped",
                             path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
                 } else if (status == Status.STOPPING) {
@@ -78,9 +78,6 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
                             path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
                 }
                 status = Status.STOPPED;
-                synchronized (this) {
-                    notifyAll();
-                }
             }
         } catch (Exception e) {
             reportError(e);

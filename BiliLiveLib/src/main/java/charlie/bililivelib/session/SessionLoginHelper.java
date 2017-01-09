@@ -1,5 +1,6 @@
 package charlie.bililivelib.session;
 
+import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
@@ -11,12 +12,11 @@ import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.CookieStore;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.xml.sax.SAXException;
 
 import java.awt.*;
@@ -27,11 +27,14 @@ import java.util.Set;
 
 import static charlie.bililivelib.session.SessionLoginHelper.LoginStatus.*;
 
-@Data
+@Getter
 public class SessionLoginHelper {
+    public static final int DEFAULT_LOGIN_TIMEOUT_MILLIS = 2000;
+    public static final boolean DEFAULT_KEEP_LOGGING_IN = true;
+
     public static final String LOGIN_JAVASCRIPT;
     public static final String TRUST_STORE_PASSWORD = "bilibili";
-    public static final int DEFAULT_LOGIN_TIMEOUT_MILLIS = 2000;
+    public static final String MINILOGIN_URL = "https://passport.bilibili.com/ajax/miniLogin/minilogin";
 
     static {
         try {
@@ -42,30 +45,29 @@ public class SessionLoginHelper {
         }
     }
 
-    private long loginTimeoutMillis = 2000;
-    @Getter(AccessLevel.PRIVATE)
-    @Setter(AccessLevel.PRIVATE)
+    private long loginTimeoutMillis;
     private HtmlPage miniLoginPage;
-    @Getter(AccessLevel.PRIVATE)
-    @Setter(AccessLevel.PRIVATE)
     private WebClient webClient;
 
     private Session session;
     private String email;
     private String password;
+    private boolean keepLoggingIn;
 
     private LoginStatus status = NOT_COMPLETED;
 
-    public SessionLoginHelper(Session session, String email, String password) {
-        this(session, email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS);
+    public SessionLoginHelper(@NotNull Session session, @NotNull String email, @NotNull String password) {
+        this(session, email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN);
     }
 
-    public SessionLoginHelper(Session session, String email, String password, long loginTimeoutMillis) {
+    public SessionLoginHelper(@NotNull Session session, @NotNull String email, @NotNull String password,
+                              long loginTimeoutMillis, boolean keepLoggingIn) {
         this.session = session;
         this.email = email;
         this.password = password;
         checkArguments();
         this.loginTimeoutMillis = loginTimeoutMillis;
+        this.keepLoggingIn = keepLoggingIn;
 
         webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
         initWebClient();
@@ -83,14 +85,13 @@ public class SessionLoginHelper {
         // - Re-synchronized call to https://passport.bilibili.com/ajax/miniLogin/login"
 
         webClient.setCache(Globals.get().getHtmlUnitCache());
+        webClient.addRequestHeader("User-Agent", BiliLiveLib.USER_AGENT);
     }
 
     private void checkArguments() {
-        if (session == null ||
-                email == null ||
-                email.isEmpty() ||
-                password == null ||
-                password.isEmpty())
+        if (session == null || email == null || password == null)
+            throw new NullPointerException();
+        if (email.isEmpty() || password.isEmpty())
             throw new IllegalArgumentException("Email=" + Objects.toString(email, "null") + "\n" +
                     "Password=" + Objects.toString(password, "null") + "\n" +
                     "Session=" + Objects.toString(session, "null"));
@@ -113,7 +114,7 @@ public class SessionLoginHelper {
 
     public void startLogin() throws IOException {
         status = NOT_COMPLETED;
-        miniLoginPage = webClient.getPage("https://passport.bilibili.com/ajax/miniLogin/minilogin");
+        miniLoginPage = webClient.getPage(MINILOGIN_URL);
         miniLoginPage.executeJavaScript(LOGIN_JAVASCRIPT);
         webClient.setStatusHandler((page, message) -> {
             if (page == miniLoginPage) {
@@ -122,13 +123,15 @@ public class SessionLoginHelper {
         });
     }
 
-    private void parseStatus(String message) {
-        if (message.startsWith("_keyerr")) {
+    private void parseStatus(@NonNls String statusJSON) {
+        // See login.js!
+        // In login.js we use _keyerr to label error occurred in getting RSA public key.
+        if (statusJSON.startsWith("_keyerr")) {
             status = KEY_ERROR;
             return;
         }
         Gson gson = Globals.get().getGson();
-        JsonObject rootObject = gson.fromJson(message, JsonElement.class).getAsJsonObject();
+        JsonObject rootObject = gson.fromJson(statusJSON, JsonElement.class).getAsJsonObject();
         if (rootObject.get("status").getAsBoolean()) {
             status = SUCCESS;
             return;
@@ -181,6 +184,25 @@ public class SessionLoginHelper {
         for (Cookie cookie : cookies) {
             store.addCookie(cookie.toHttpClient()); // HtmlUnit Cookie to HttpClient Cookie
         }
+    }
+
+    public void setLoginTimeoutMillis(long loginTimeoutMillis) {
+        if (loginTimeoutMillis < 1) throw new IllegalArgumentException("Login Timeout < 1ms");
+        this.loginTimeoutMillis = loginTimeoutMillis;
+    }
+
+    public void setSession(@NotNull Session session) {
+        this.session = session;
+    }
+
+    public void setEmail(@NotNull String email) {
+        if (email.isEmpty()) throw new IllegalArgumentException("E-Mail is empty");
+        this.email = email;
+    }
+
+    public void setPassword(@NotNull String password) {
+        if (password.isEmpty()) throw new IllegalArgumentException("Password is empty");
+        this.password = password;
     }
 
     public enum LoginStatus {

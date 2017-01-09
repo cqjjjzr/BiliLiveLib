@@ -3,6 +3,7 @@ package charlie.bililivelib.streamer;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.util.I18n;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.URL;
@@ -18,11 +19,7 @@ public abstract class AbstractDownloader {
     @Getter
     protected String message;
 
-    public enum Status {
-        STARTING, STARTED, STOPPING, STOPPED, ERROR
-    }
-
-    protected String generateErrorMessage(Throwable e) {
+    protected String generateErrorMessage(@NotNull Throwable e) {
         return I18n.format("msg.exception.download", e.getClass().getName(), e.getMessage());
     }
 
@@ -45,4 +42,8 @@ public abstract class AbstractDownloader {
     public abstract void tryStop();
 
     public abstract void forceStop();
+
+    public enum Status {
+        STARTING, STARTED, STOPPING, STOPPED, ERROR
+    }
 }

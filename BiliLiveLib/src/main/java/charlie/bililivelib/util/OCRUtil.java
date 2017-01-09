@@ -2,6 +2,8 @@ package charlie.bililivelib.util;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.image.BufferedImage;
 
@@ -15,7 +17,8 @@ public class OCRUtil {
         tesseract.setPageSegMode(SINGLE_LINE_MODE);
     }
 
-    public String ocrCalcCaptcha(BufferedImage image) {
+    @Contract(pure = true)
+    public String ocrCalcCaptcha(@NotNull BufferedImage image) {
         try {
             return tesseract.doOCR(image);
         } catch (TesseractException e) {

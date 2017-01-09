@@ -2,6 +2,9 @@ package charlie.bililivelib.session;
 
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.beans.*;
 import java.io.ByteArrayInputStream;
@@ -29,7 +32,8 @@ public class SessionPersistenceHelper {
         }
     }
 
-    public static String toXML(Session session) {
+    @Contract(pure = true)
+    public static String toXML(@NotNull Session session) {
         List<Cookie> cookies = session.getCookieStore().getCookies();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -45,7 +49,7 @@ public class SessionPersistenceHelper {
         return new String(outputStream.toByteArray()) + XML_TAIL;
     }
 
-    public static void fromXML(Session session, String xml) {
+    public static void fromXML(@NotNull Session session, @NonNls String xml) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
         XMLDecoder decoder = new XMLDecoder(inputStream);
 
