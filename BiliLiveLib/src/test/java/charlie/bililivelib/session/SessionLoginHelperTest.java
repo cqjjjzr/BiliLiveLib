@@ -20,7 +20,7 @@ public class SessionLoginHelperTest {
         String captcha = testInput("Captcha:");
         helper.loginWithCaptcha(captcha);
 
-        assertEquals(SessionLoginHelper.LoginStatus.SUCCESS, helper.getLoginStatus());
+        assertEquals(SessionLoginHelper.LoginStatus.SUCCESS, helper.getStatus());
     }
 
     private String testInput(String message) {

@@ -11,7 +11,7 @@ import charlie.bililivelib.danmaku.event.DanmakuListener;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.util.I18n;
 import lombok.Getter;
-import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static charlie.bililivelib.util.ByteArrayOperation.*;
+import static charlie.bililivelib.util.ByteArrayOperation.byteArrayToInt;
+import static charlie.bililivelib.util.ByteArrayOperation.byteArrayToShort;
 
 public class DanmakuReceiver implements Runnable {
     public static final Charset UTF8 = Charset.forName("UTF-8");
@@ -39,17 +40,13 @@ public class DanmakuReceiver implements Runnable {
     @Getter
     private Room room;
     @Getter
-    @Setter
     private long uid;
     @Getter
-    @Setter
     private String commentServer;
 
     private List<DanmakuListener> listeners = new LinkedList<>();
     @Getter
-    @Setter
     private DispatchManager dispatchManager = new DispatchManager();
-    private Thread thread;
     private Timer heartbeatTimer;
     private volatile Status status = Status.NOT_CONNECTED;
 
@@ -57,23 +54,35 @@ public class DanmakuReceiver implements Runnable {
     private InputStream  inputStream;
     private Socket       socket;
 
-    public DanmakuReceiver(Room room) {
+    public DanmakuReceiver(@NotNull Room room) {
         this(room, generateRandomUID(), CMT_SERVERS[0]);
     }
 
-    public DanmakuReceiver(Room room, long uid) {
+    public DanmakuReceiver(@NotNull Room room, long uid) {
         this(room, uid, CMT_SERVERS[0]);
     }
 
-    public DanmakuReceiver(Room room, long uid, String commentServer) {
+    public DanmakuReceiver(@NotNull Room room, long uid, @NotNull String commentServer) {
         this.room = room;
         this.uid = uid;
         this.commentServer = commentServer;
+
+        checkArguments();
+    }
+
+    private static long generateRandomUID() {
+        return (long) (1e14 + 2e14 * Math.random());
+    }
+
+    private void checkArguments() {
+        if (room == null || commentServer == null) throw new NullPointerException();
+        if (uid < 1) throw new IllegalArgumentException("UserID < 0");
+        if (commentServer.isEmpty()) throw new IllegalArgumentException("commentServer is empty");
     }
 
     public void connect() {
         if (status == Status.NOT_CONNECTED) {
-            thread = new Thread(this);
+            Thread thread = new Thread(this);
             heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + room.getRoomID());
             thread.start();
         }
@@ -207,10 +216,6 @@ public class DanmakuReceiver implements Runnable {
         //return stream.read(buffer, 0, length);
     }
 
-    private static long generateRandomUID() {
-        return (long) (1e14 + 2e14 * Math.random());
-    }
-
     public void addDanmakuListener(DanmakuListener listener) {
         listeners.add(listener);
     }
@@ -239,6 +244,19 @@ public class DanmakuReceiver implements Runnable {
                 break;
         }
 
+    }
+
+    public void setDispatchManager(@NotNull DispatchManager dispatchManager) {
+        this.dispatchManager = dispatchManager;
+    }
+
+    public void setCommentServer(@NotNull String commentServer) {
+        this.commentServer = commentServer;
+    }
+
+    public void setUid(long uid) {
+        if (uid < 1) throw new IllegalArgumentException("commentServer is empty");
+        this.uid = uid;
     }
 
     public enum Status {

@@ -1,6 +1,7 @@
 package charlie.bililivelib.net;
 
 import org.apache.http.ssl.TrustStrategy;
+import org.jetbrains.annotations.Contract;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -12,6 +13,7 @@ public class BilibiliTrustStrategy implements TrustStrategy {
     //UPDATE IF BILIBILI's CERT CHANGES.
     public static final String BILIBILI_CERT_FINGERPRINT = "3F1455BB9988290A4019687C799C507A54BA143A";
 
+    @Contract(pure = true)
     private static String digestMD5(byte[] data) {
         MessageDigest messageDigest;
         String md5Str;

@@ -9,10 +9,10 @@ import charlie.bililivelib.session.Session;
 import charlie.bililivelib.util.I18n;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -78,11 +78,12 @@ public class Room {
         }
     }
 
+    @Contract(pure = true)
     private String getRealRoomIDRequestURL(int originalRoomID) {
         return REAL_ROOMID_GET + originalRoomID;
     }
 
-    private void parseAndFillRealRoomID(String httpString) throws BiliLiveException {
+    private void parseAndFillRealRoomID(@NotNull String httpString) throws BiliLiveException {
         Matcher matcher = REAL_ROOMID_PATTERN.matcher(httpString);
         if (matcher.find()) {
             roomID = Integer.parseInt(matcher.group());
@@ -107,15 +108,17 @@ public class Room {
         }
     }
 
+    @Contract(pure = true)
     private String getRoomInfoRequestURL(int roomID) {
         return LIVE_GET_INFO_GET + roomID;
     }
 
-    private String generateInvalidLiveInfoMessage(RoomInfoResponseJson json) {
+    @NotNull
+    private String generateInvalidLiveInfoMessage(@NotNull RoomInfoResponseJson json) {
         return I18n.format("exception.fill_room_invalid", json.getCode(), json.getMessage());
     }
 
-    public void fromJson(String jsonString) throws BiliLiveException {
+    public void fromJson(@NotNull String jsonString) throws BiliLiveException {
         RoomInfoResponseJson jsonObject = Globals.get().getGson()
                 .fromJson(jsonString, RoomInfoResponseJson.class);
 
@@ -137,7 +140,7 @@ public class Room {
         liveTimelineMilliSecond = data.getLiveTimelineMSecond();
     }
 
-    private Image downloadImage(String url) throws BiliLiveException {
+    private Image downloadImage(@NotNull String url) throws BiliLiveException {
         try {
             HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(url);
             Image image = ImageIO.read(response.getEntity().getContent());
@@ -163,6 +166,7 @@ public class Room {
         }
     }
 
+    @NotNull
     private String getLiveAddressesRequestURL(int roomID) {
         return MessageFormat.format(LIVE_ADDRESSES_MF_GET, roomID);
     }
@@ -224,7 +228,6 @@ public class Room {
     }
 
     @Getter
-    @Setter
     public static class GiftRankUser {
         private int uid;
         private UserGuardLevel guardLevel;

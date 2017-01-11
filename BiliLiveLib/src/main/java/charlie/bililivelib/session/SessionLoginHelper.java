@@ -5,7 +5,6 @@ import charlie.bililivelib.Globals;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
@@ -159,20 +158,6 @@ public class SessionLoginHelper {
         // WARNING: USED Experimental API HERE!
         // webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
         // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
-    }
-
-    public LoginStatus getLoginStatus() {
-        return status;
-    }
-
-    private boolean isValidMessageElement(DomElement domElement) {
-        return domElement.getAttribute("class").equals("message")
-                && !domElement.getTextContent().trim().isEmpty();
-    }
-
-    private boolean checkSuccess() {
-        //bilibili will open https://passport.bilibili.com/ajax/miniLogin/redirect if login success.
-        return webClient.getCurrentWindow().getEnclosedPage().getUrl().toString().contains("redirect");
     }
 
     public void fillSession() {
