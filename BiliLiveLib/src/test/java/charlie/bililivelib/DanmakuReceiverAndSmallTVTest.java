@@ -45,12 +45,12 @@ public class DanmakuReceiverAndSmallTVTest {
     }
 
     private static void initSession() throws IOException {
-        Path cookieFile = Paths.get("cookies.xml");
+        Path cookieFile = Paths.get("cookies.bin");
         if (Files.exists(cookieFile)) {
             loadSessionFromFile();
         } else {
-            Files.createFile(cookieFile);
             login();
+            Files.createFile(cookieFile);
         }
         session.activate();
 
@@ -78,7 +78,7 @@ public class DanmakuReceiverAndSmallTVTest {
     }
 
     private static void loadSessionFromFile() throws IOException {
-        String xml = new String(Files.readAllBytes(Paths.get("cookies.xml")));
+        String xml = new String(Files.readAllBytes(Paths.get("cookies.bin")));
         session.fromBase64(xml);
     }
 

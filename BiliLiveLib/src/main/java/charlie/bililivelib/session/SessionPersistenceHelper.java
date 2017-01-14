@@ -1,108 +1,45 @@
 package charlie.bililivelib.session;
 
+import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
+import java.io.*;
+import java.util.Base64;
 import java.util.List;
 
 public class SessionPersistenceHelper {
-    private static final PersistenceDelegate COOKIE_PERSISTENCE_DELEGATE = new DefaultPersistenceDelegate(
-            new String[]{"name", "value", "domain", "comment", "expiryDate", "path", "secure", "version"}
-    );
-    private static final String XML_TAIL = "<!-- DON'T MODIFY THIS FILE! IT'S MACHINE GENERATED. -->";
-
-
-    static {
-        try {
-            PropertyDescriptor[] descriptors = Introspector.getBeanInfo(PersistenceCookie.class)
-                    .getPropertyDescriptors();
-
-            for (PropertyDescriptor descriptor : descriptors) {
-                if (descriptor.getName().equals("commentURL") || descriptor.getName().equals("ports"))
-                    descriptor.setValue("transient", true);
-            }
-        } catch (IntrospectionException ignored) {
-        }
-    }
-
     @Contract(pure = true)
     public static String toBase64(@NotNull Session session) {
         List<Cookie> cookies = session.getCookieStore().getCookies();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        XMLEncoder encoder = new XMLEncoder(outputStream);
-        encoder.setPersistenceDelegate(Cookie.class, COOKIE_PERSISTENCE_DELEGATE);
-
-        encoder.writeObject(cookies.size());
-        for (Cookie cookie : cookies) {
-            encoder.writeObject(cookie instanceof PersistenceCookie ? cookie : new PersistenceCookie(cookie));
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(cookies);
+            objectOutputStream.close();
+            return new String(Base64.getEncoder().encode(outputStream.toByteArray()));
+        } catch (IOException e) {
+            throw new AssertionError();
         }
-        encoder.close();
-
-        return new String(outputStream.toByteArray()) + XML_TAIL;
     }
 
+    @SuppressWarnings("unchecked")
     public static void fromBase64(@NotNull Session session, @NonNls String xml) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
-        XMLDecoder decoder = new XMLDecoder(inputStream);
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(xml.getBytes()));
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            List<Cookie> cookies = (List<Cookie>) objectInputStream.readObject();
 
-        int size = (Integer) decoder.readObject();
-
-        session.getCookieStore().clear();
-
-        for (int i = 0; i < size; i++) {
-            session.getCookieStore().addCookie((Cookie) decoder.readObject());
-        }
-        decoder.close();
-    }
-
-    public static class PersistenceCookie extends BasicClientCookie {
-        /**
-         * Default Constructor taking a name and a value. The value may be null.
-         *
-         * @param name  The name.
-         * @param value The value.
-         */
-        public PersistenceCookie(String name, String value) {
-            super(name, value);
-        }
-
-        public PersistenceCookie(Cookie cookie) {
-            this(cookie.getName(), cookie.getValue());
-
-            setDomain(cookie.getDomain());
-            setExpiryDate(cookie.getExpiryDate());
-            setComment(cookie.getComment());
-            setPath(cookie.getPath());
-            setSecure(cookie.isSecure());
-            setVersion(cookie.getVersion());
-        }
-
-        @ConstructorProperties({"name", "value", "domain", "comment", "expiryDate", "path", "secure", "version"})
-        public PersistenceCookie(
-                Object name,
-                Object value,
-                Object domain,
-                Object comment,
-                Object expiryDate,
-                Object path,
-                Object secure,
-                Object version) {
-            this((String) name, (String) value);
-
-            setDomain((String) domain);
-            setExpiryDate(expiryDate == null ? null : (Date) expiryDate);
-            setComment((String) comment);
-            setPath((String) path);
-            setSecure((Boolean) secure);
-            setVersion((Integer) version);
+            CookieStore store = session.getCookieStore();
+            store.clear();
+            for (Cookie cookie : cookies) {
+                store.addCookie(cookie);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new AssertionError();
         }
     }
 }
