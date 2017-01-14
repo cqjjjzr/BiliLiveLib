@@ -1,42 +1,111 @@
 package charlie.bililivelib;
 
 import charlie.bililivelib.danmaku.DanmakuReceiver;
-import charlie.bililivelib.danmaku.dispatch.*;
+import charlie.bililivelib.danmaku.dispatch.GlobalAnnounceDispatcher;
+import charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
-import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.session.Session;
+import charlie.bililivelib.session.SessionLoginHelper;
+import charlie.bililivelib.smalltv.SmallTV;
 import charlie.bililivelib.smalltv.SmallTVProtocol;
+import charlie.bililivelib.smalltv.SmallTVReward;
+import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+import static org.junit.Assert.assertTrue;
+
 public class DanmakuReceiverAndSmallTVTest {
+    public static final int SIXTEEN_ROOMID = 10313;
+    public static final int CHARLIE_JIANG_ROOMID = 39249;
+    public static final int MARCOV_ROOMID = 17029;
     private static Session session;
 
     @BeforeClass
-    public static void init() {
+    public static void init() throws IOException {
         I18n.init();
         LogUtil.init();
         session = new Session(Globals.get().getConnectionPool());
+
+        initSession();
     }
 
-    public static final int SIXTEEN_ROOMID = 10313;
-    public static final int CHARLIEJIANG_ROOMID = 39249;
-    public static final int MARCOV_ROOMID = 17029;
+    private static void initSession() throws IOException {
+        Path cookieFile = Paths.get("cookies.xml");
+        if (Files.exists(cookieFile)) {
+            loadSessionFromFile();
+        } else {
+            login();
+        }
+    }
+
+    private static void login() throws IOException {
+        String email = testInput("E-Mail:");
+        String password = testInput("Password:");
+
+        SessionLoginHelper helper = new SessionLoginHelper(session, email, password,
+                SessionLoginHelper.DEFAULT_LOGIN_TIMEOUT_MILLIS,
+                true);
+        helper.startLogin();
+        JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
+                JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));
+
+        String captcha = testInput("Captcha:");
+        helper.loginWithCaptcha(captcha);
+
+        System.out.println(helper.getStatus());
+        assertTrue(helper.getStatus() == SessionLoginHelper.LoginStatus.SUCCESS);
+
+        helper.fillSession();
+
+        Path cookieFile = Paths.get("cookies.xml");
+        Files.createFile(cookieFile);
+        Files.write(cookieFile, session.toXML().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    private static void loadSessionFromFile() throws IOException {
+        String xml = new String(Files.readAllBytes(Paths.get("cookies.xml")));
+        session.fromXML(xml);
+    }
+
+    private static String testInput(String message) {
+        return JOptionPane.showInputDialog(null, message, "Test",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
+    @Ignore
+    public void testSmallTV() throws Exception {
+        int smallTV = Integer.parseInt(testInput("Input a SmallTV ID:"));
+
+        SmallTVReward reward = new SmallTVProtocol(session).getReward(smallTV);
+
+        assertTrue(!reward.isMiss());
+        assert reward.getReward() != null;
+        System.out.println(reward.getReward().getKind().getDisplayName() + " x " + reward.getReward().getCount());
+    }
 
     @Test
-    public void test() throws Exception {
+    public void testDanmaku() throws Exception {
         Room room = new Room(SIXTEEN_ROOMID, session);
         DanmakuReceiver receiver = new DanmakuReceiver(room);
-        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
+        /*receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
         receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
         receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());*/
         receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalAnnounceDispatcher());
         receiver.addDanmakuListener(new TestListener());
@@ -62,7 +131,7 @@ public class DanmakuReceiverAndSmallTVTest {
 
         @Override
         public void watcherCountEvent(DanmakuEvent event) {
-            //logger.log(Level.INFO, "WatcherCount:" + event.getParam());
+            // logger.log(Level.INFO, "WatcherCount:" + event.getParam());
         }
 
         @Override
@@ -73,6 +142,7 @@ public class DanmakuReceiverAndSmallTVTest {
         @Override
         public void errorEvent(DanmakuEvent event) {
             logger.log(Level.ERROR, event.getParam());
+            ((Throwable) event.getParam()).printStackTrace();
         }
 
         @Override
@@ -87,8 +157,13 @@ public class DanmakuReceiverAndSmallTVTest {
 
         @Override
         public void globalGiftEvent(DanmakuEvent event) {
-            logger.log(Level.INFO, "Global SmallTVRoom:" + event.getParam());
-            //smallTVProtocol.getCurrentSmallTV(((SmallTVRoom) event.getParam()).getRealRoomID());
+            logger.log(Level.INFO, "Global SmallTV:" + event.getParam());
+            try {
+                smallTVProtocol.joinLottery((SmallTV) event.getParam());
+                logger.log(Level.INFO, "Joined Global SmallTV:" + event.getParam());
+            } catch (BiliLiveException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

@@ -16,7 +16,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.CookieStore;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.xml.sax.SAXException;
 
 import java.awt.*;
 import java.io.IOException;
@@ -146,7 +145,7 @@ public class SessionLoginHelper {
         return image.getImageReader().read(0);
     }
 
-    public void loginWithCaptcha(String captcha) throws IOException, SAXException {
+    public void loginWithCaptcha(String captcha) throws IOException {
         miniLoginPage.getElementById("login-username").setAttribute("value", email);
         miniLoginPage.getElementById("login-passwd").setAttribute("value", password);
         miniLoginPage.getElementById("login-captcha").setAttribute("value", captcha);

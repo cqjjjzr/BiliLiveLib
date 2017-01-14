@@ -25,7 +25,6 @@ public class GlobalAnnounceDispatcher extends AbstractJSONDispatcher {
         GlobalAnnounceInfo announce = Globals.get().getGson()
                 .fromJson(rootObject, GlobalAnnounceInfo.class);
         DanmakuEvent event = new DanmakuEvent(source, announce, DanmakuEvent.Kind.GLOBAL_ANNOUNCE);
-        System.out.println(rootObject);
         for(DanmakuListener listener : listeners) {
             listener.globalAnnounceEvent(event);
         }

@@ -155,8 +155,7 @@ public class DanmakuReceiver implements Runnable {
         } catch (Exception e) {
             if (status == Status.CONNECTED) {
                 disconnect();
-                fireDanmakuEvent(I18n.format("msg.danmaku_exception_down",
-                        e.getClass().getName(), e.getMessage()), DanmakuEvent.Kind.ERROR);
+                fireDanmakuEvent(e, DanmakuEvent.Kind.ERROR_DOWN);
             }
         }
     }

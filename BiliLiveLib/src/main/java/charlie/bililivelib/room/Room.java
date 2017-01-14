@@ -74,7 +74,7 @@ public class Room {
                 throw BiliLiveException.createHttpError(getString("exception.roomid"), statusCode);
             }
         } catch (IOException ex) {
-            throw BiliLiveException.createCausedException(getString("exception.roomid"), ex);
+            throw new BiliLiveException(getString("exception.roomid"), ex);
         }
     }
 
@@ -104,7 +104,7 @@ public class Room {
             }
             throw BiliLiveException.createHttpError(getString("exception.fill_room"), statusCode);
         } catch (IOException ex) {
-            throw BiliLiveException.createCausedException(getString("exception.fill_room"), ex);
+            throw new BiliLiveException(getString("exception.fill_room"), ex);
         }
     }
 
@@ -147,7 +147,7 @@ public class Room {
             EntityUtils.consume(response.getEntity());
             return image;
         } catch (IOException ex) {
-            throw BiliLiveException.createCausedException(getString("exception.fill_room_invalid"), ex);
+            throw new BiliLiveException(getString("exception.fill_room_invalid"), ex);
         }
     }
 
@@ -162,7 +162,7 @@ public class Room {
             }
             throw BiliLiveException.createHttpError(getString("exception.live_addresses"), statusCode);
         } catch (IOException ex) {
-            throw BiliLiveException.createCausedException(getString("exception.live_addresses"), ex);
+            throw new BiliLiveException(getString("exception.live_addresses"), ex);
         }
     }
 

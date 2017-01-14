@@ -2,8 +2,8 @@ package charlie.bililivelib.room;
 
 import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
-import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.room.datamodel.ErrorResponseJson;
+import charlie.bililivelib.util.I18n;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.w3c.dom.Document;
@@ -50,7 +50,7 @@ public class LiveAddresses {
                     backup2URLNode .getTextContent().trim(),
                     backup3URLNode .getTextContent().trim());
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            throw BiliLiveException.createCausedException(getString("exception.live_addresses"), e);
+            throw new BiliLiveException(getString("exception.live_addresses"), e);
         }
     }
 

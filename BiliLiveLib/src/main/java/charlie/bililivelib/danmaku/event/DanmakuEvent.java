@@ -26,7 +26,7 @@ public class DanmakuEvent extends EventObject {
     }
 
     public enum Kind {
-        JOINED, ERROR, NEW_DANMAKU, WATCHER_COUNT,
+        JOINED, ERROR, ERROR_DOWN, NEW_DANMAKU, WATCHER_COUNT,
         START_STOP, WELCOME_VIP, GIVE_GIFT, GLOBAL_GIFT, GLOBAL_ANNOUNCE
     }
 }

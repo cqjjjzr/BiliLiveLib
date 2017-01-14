@@ -1,5 +1,6 @@
 package charlie.bililivelib.danmaku.dispatch;
 
+import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 
 import java.util.LinkedList;
@@ -18,7 +19,14 @@ public class DispatchManager {
 
     public void dispatch(List<DanmakuListener> listeners, String body, Object source) {
         for (Dispatcher dispatcher : dispatchers) {
-            dispatcher.tryDispatch(listeners, body, source);
+            try {
+                dispatcher.tryDispatch(listeners, body, source);
+            } catch (Exception ex) {
+                DanmakuEvent event = new DanmakuEvent(dispatcher, ex, DanmakuEvent.Kind.ERROR);
+                for (DanmakuListener listener : listeners) {
+                    listener.errorEvent(event);
+                }
+            }
         }
     }
 }

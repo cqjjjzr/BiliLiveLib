@@ -18,8 +18,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class HttpHelper {
-    private static final SSLContext BILIBILI_SSL_CONTEXT = Globals.get().getBilibiliSSLContext();
-    private static final HttpHost BILI_LIVE_ROOT = Globals.get().getBiliLiveRoot();
+    private final SSLContext bilibiliSSLContext = Globals.get().getBilibiliSSLContext();
+    private final HttpHost biliLiveRoot = Globals.get().getBiliLiveRoot();
     @Getter
     private HttpClient httpClient;
 
@@ -41,7 +41,7 @@ public class HttpHelper {
         HttpClientBuilder builder = HttpClientBuilder.create()
                 .setUserAgent(BiliLiveLib.USER_AGENT)
                 .setProxy(new HttpHost("127.0.0.1", 8888))
-                .setSSLContext(BILIBILI_SSL_CONTEXT);
+                .setSSLContext(bilibiliSSLContext);
         init(builder.build());
     }
 
@@ -50,7 +50,7 @@ public class HttpHelper {
     }
 
     public HttpResponse createPostBiliLiveHost(String url, PostArguments args) throws IOException {
-        return createPostResponse(BILI_LIVE_ROOT, url, args);
+        return createPostResponse(biliLiveRoot, url, args);
     }
 
     public HttpResponse createPostResponse(HttpHost host, String url, PostArguments args) throws IOException {
@@ -67,7 +67,7 @@ public class HttpHelper {
     }
 
     public HttpResponse createGetBiliLiveHost(String url) throws IOException {
-        return createGetResponse(BILI_LIVE_ROOT, url);
+        return createGetResponse(biliLiveRoot, url);
     }
 
     public HttpResponse createGetResponse(URL url) throws IOException {

@@ -4,6 +4,7 @@ import charlie.bililivelib.net.BilibiliTrustStrategy;
 import charlie.bililivelib.net.HttpHelper;
 import com.gargoylesoftware.htmlunit.Cache;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -46,10 +47,12 @@ public class Globals {
         noSessionHttpHelper = new HttpHelper();
         noSessionHttpHelper.init();
 
-        biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT, 80, "http");
+        biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT);
         //Visit bilibili passport via https. 443 is the https port.
         biliPassportHttpsRoot = new HttpHost(BILI_PASSPORT_HOST_ROOT, 443, "https");
-        gson = ThreadLocal.withInitial(Gson::new);
+        gson = ThreadLocal.withInitial(() -> new GsonBuilder()
+                .setLenient()
+                .create());
         htmlUnitCache = ThreadLocal.withInitial(Cache::new);
         connectionPool = new PoolingHttpClientConnectionManager(CONNECTION_ALIVE_TIME_SECOND, TimeUnit.SECONDS);
         try {

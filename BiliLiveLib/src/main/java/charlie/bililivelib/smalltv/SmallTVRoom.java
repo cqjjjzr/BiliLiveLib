@@ -1,40 +1,56 @@
 package charlie.bililivelib.smalltv;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
 @Data
 public class SmallTVRoom {
+    /**
+     * code : 0
+     * msg : OK
+     * data : {"lastid":0,"join":[{"id":14610,"dtime":85}],"unjoin":[]}
+     */
+
+    private int code;
     @SerializedName("msg")
     private String message;
-    @SerializedName("url")
-    private String roomURL;
-    @SerializedName("roomid")
-    private int roomID;
-    @SerializedName("real_roomid")
-    private int realRoomID;
-    @SerializedName("tv_id")
-    private int smallTVID;
+    @Getter(AccessLevel.PRIVATE)
+    private DataBean data;
 
-    private DataInfo data;
+    public List<SmallTVShortInfo> getJoinedSmallTVs() {
+        return data.join;
+    }
 
-    @Data
-    public class DataInfo {
+    public List<SmallTVShortInfo> getNotJoinedSmallTVs() {
+        return data.unjoin;
+    }
+
+    private static class DataBean {
+        /**
+         * lastid : 0
+         * join : [{"id":14610,"dtime":85}]
+         * unjoin : []
+         */
+
         @SerializedName("lastid")
-        private int lastID;
+        private int lastSmallTVID;
+        private List<SmallTVShortInfo> join;
+        private List<SmallTVShortInfo> unjoin;
+    }
 
-        @SerializedName("join")
-        private List<SmallTVJoinInfo> joinedInfo = null;
-        @SerializedName("unjoin")
-        private List<SmallTVJoinInfo> notJoinedInfo = null;
+    public static class SmallTVShortInfo {
+        /**
+         * id : 14610
+         * dtime : 85
+         */
 
-        @Data
-        public class SmallTVJoinInfo {
-            private int id;
-            @SerializedName("dtime")
-            private int countDown;
-        }
+        @SerializedName("id")
+        private int smallTVID;
+        @SerializedName("dtime")
+        private int countDown;
     }
 }
