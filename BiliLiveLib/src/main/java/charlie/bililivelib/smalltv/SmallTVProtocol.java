@@ -74,7 +74,7 @@ public class SmallTVProtocol {
 
     private boolean isJoinSuccessfullyAndNotStarted(JsonObject rootObject) {
         return rootObject.get("code").getAsInt() == SUCCESS &&
-                rootObject.get("data").getAsJsonObject().get("code").getAsInt() == JOINED_AND_NOT_STARTED;
+                rootObject.get("data").getAsJsonObject().get("status").getAsInt() == JOINED_AND_NOT_STARTED;
     }
 
     @Contract(pure = true)

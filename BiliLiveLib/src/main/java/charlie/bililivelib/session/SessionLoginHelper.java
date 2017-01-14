@@ -47,34 +47,32 @@ public class SessionLoginHelper {
     private HtmlPage miniLoginPage;
     private WebClient webClient;
 
-    private Session session;
     private String email;
     private String password;
     private boolean keepLoggingIn;
 
     private LoginStatus status = NOT_COMPLETED;
 
-    public SessionLoginHelper(@NotNull Session session, @NotNull String email, @NotNull String password) {
-        this(session, email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN);
+    public SessionLoginHelper(@NotNull String email, @NotNull String password) {
+        this(email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN);
     }
 
-    public SessionLoginHelper(@NotNull Session session, @NotNull String email, @NotNull String password,
+    public SessionLoginHelper(@NotNull String email, @NotNull String password,
                               long loginTimeoutMillis, boolean keepLoggingIn) {
-        this.session = session;
         this.email = email;
         this.password = password;
         checkArguments();
         this.loginTimeoutMillis = loginTimeoutMillis;
         this.keepLoggingIn = keepLoggingIn;
 
-        webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
+        webClient = new WebClient(BrowserVersion.BEST_SUPPORTED/*, "127.0.0.1", 8888*/); // Commented code is for Fiddler Debugging.
         initWebClient();
     }
 
     private void initWebClient() {
-        webClient.getOptions().setSSLTrustStore(SessionLoginHelper.class.getResource("/bili.truststore"),
+        /*webClient.getOptions().setSSLTrustStore(SessionLoginHelper.class.getResource("/bili.truststore"),
                 TRUST_STORE_PASSWORD,
-                "jks");
+                "jks");*/
         avoidUselessErrorMessages();
         webClient.getOptions().setCssEnabled(false);
         webClient.setAjaxController(new ResynchronizingAjaxController()); // Wait Ajax to eval.
@@ -87,12 +85,11 @@ public class SessionLoginHelper {
     }
 
     private void checkArguments() {
-        if (session == null || email == null || password == null)
+        if (email == null || password == null)
             throw new NullPointerException();
         if (email.isEmpty() || password.isEmpty())
             throw new IllegalArgumentException("Email=" + Objects.toString(email, "null") + "\n" +
-                    "Password=" + Objects.toString(password, "null") + "\n" +
-                    "Session=" + Objects.toString(session, "null"));
+                    "Password=" + Objects.toString(password, "null"));
     }
 
     private void avoidUselessErrorMessages() {
@@ -159,8 +156,9 @@ public class SessionLoginHelper {
         // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
     }
 
-    public void fillSession() {
+    public void fillSession(Session session) throws IOException {
         if (status != SUCCESS) throw new IllegalStateException("Bad status: " + status);
+
         Set<Cookie> cookies = webClient.getCookieManager().getCookies();
 
         CookieStore store = session.getCookieStore();
@@ -173,10 +171,6 @@ public class SessionLoginHelper {
     public void setLoginTimeoutMillis(long loginTimeoutMillis) {
         if (loginTimeoutMillis < 1) throw new IllegalArgumentException("Login Timeout < 1ms");
         this.loginTimeoutMillis = loginTimeoutMillis;
-    }
-
-    public void setSession(@NotNull Session session) {
-        this.session = session;
     }
 
     public void setEmail(@NotNull String email) {

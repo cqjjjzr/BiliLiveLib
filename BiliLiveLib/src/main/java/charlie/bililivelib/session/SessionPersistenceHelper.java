@@ -33,7 +33,7 @@ public class SessionPersistenceHelper {
     }
 
     @Contract(pure = true)
-    public static String toXML(@NotNull Session session) {
+    public static String toBase64(@NotNull Session session) {
         List<Cookie> cookies = session.getCookieStore().getCookies();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -49,7 +49,7 @@ public class SessionPersistenceHelper {
         return new String(outputStream.toByteArray()) + XML_TAIL;
     }
 
-    public static void fromXML(@NotNull Session session, @NonNls String xml) {
+    public static void fromBase64(@NotNull Session session, @NonNls String xml) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
         XMLDecoder decoder = new XMLDecoder(inputStream);
 

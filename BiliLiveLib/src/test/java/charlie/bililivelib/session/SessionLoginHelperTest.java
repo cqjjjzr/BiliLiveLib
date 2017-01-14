@@ -12,7 +12,7 @@ public class SessionLoginHelperTest {
         String email = testInput("E-Mail:");
         String password = testInput("Password:");
 
-        SessionLoginHelper helper = new SessionLoginHelper(new Session(), email, password);
+        SessionLoginHelper helper = new SessionLoginHelper(email, password);
         helper.startLogin();
         JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
                 JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));

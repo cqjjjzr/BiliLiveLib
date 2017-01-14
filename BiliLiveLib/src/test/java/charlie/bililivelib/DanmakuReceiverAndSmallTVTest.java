@@ -49,15 +49,19 @@ public class DanmakuReceiverAndSmallTVTest {
         if (Files.exists(cookieFile)) {
             loadSessionFromFile();
         } else {
+            Files.createFile(cookieFile);
             login();
         }
+        session.activate();
+
+        Files.write(cookieFile, session.toBase64().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     private static void login() throws IOException {
         String email = testInput("E-Mail:");
         String password = testInput("Password:");
 
-        SessionLoginHelper helper = new SessionLoginHelper(session, email, password,
+        SessionLoginHelper helper = new SessionLoginHelper(email, password,
                 SessionLoginHelper.DEFAULT_LOGIN_TIMEOUT_MILLIS,
                 true);
         helper.startLogin();
@@ -70,16 +74,12 @@ public class DanmakuReceiverAndSmallTVTest {
         System.out.println(helper.getStatus());
         assertTrue(helper.getStatus() == SessionLoginHelper.LoginStatus.SUCCESS);
 
-        helper.fillSession();
-
-        Path cookieFile = Paths.get("cookies.xml");
-        Files.createFile(cookieFile);
-        Files.write(cookieFile, session.toXML().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        helper.fillSession(session);
     }
 
     private static void loadSessionFromFile() throws IOException {
         String xml = new String(Files.readAllBytes(Paths.get("cookies.xml")));
-        session.fromXML(xml);
+        session.fromBase64(xml);
     }
 
     private static String testInput(String message) {
@@ -101,7 +101,8 @@ public class DanmakuReceiverAndSmallTVTest {
     @Test
     public void testDanmaku() throws Exception {
         Room room = new Room(SIXTEEN_ROOMID, session);
-        DanmakuReceiver receiver = new DanmakuReceiver(room);
+        DanmakuReceiver receiver = new DanmakuReceiver(room,
+                DanmakuReceiver.generateRandomUID(), DanmakuReceiver.CMT_SERVERS[1]);
         /*receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
         receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
         receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());

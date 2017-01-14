@@ -39,12 +39,12 @@ public class SessionTest {
         cookie.setComment("LIVE.");
         cookie.setVersion(1);
         store.addCookie(cookie);
-        String xml = session.toXML();
+        String xml = session.toBase64();
         System.out.println(xml);
 
         store = new BasicCookieStore();
         Session newSession = new Session(null, store);
-        newSession.fromXML(xml);
+        newSession.fromBase64(xml);
         System.out.println(store);
     }
 
@@ -54,12 +54,12 @@ public class SessionTest {
         Session session = new Session(null, store);
         BasicClientCookie cookie = new BasicClientCookie("name1", "value1");
         store.addCookie(cookie);
-        String xml = session.toXML();
+        String xml = session.toBase64();
         System.out.println(xml);
 
         store = new BasicCookieStore();
         session = new Session(null, store);
-        session.fromXML(xml);
+        session.fromBase64(xml);
         System.out.println(store);
     }
 

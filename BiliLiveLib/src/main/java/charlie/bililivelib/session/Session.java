@@ -18,6 +18,8 @@ import java.io.IOException;
 @Getter
 public class Session {
     public static final String EXIT_URL_G = "/login?act=exit";
+    public static final String ACTIVATE_URL = "http://live.bilibili.com/2";
+
     private static final SSLContext BILIBILI_SSL_CONTEXT = Globals.get().getBilibiliSSLContext();
     private HttpHelper httpHelper;
     @Getter(AccessLevel.PROTECTED)
@@ -44,6 +46,7 @@ public class Session {
                 .setUserAgent(BiliLiveLib.USER_AGENT)
                 .setConnectionManager(clientConnectionManager)
                 .setSSLContext(BILIBILI_SSL_CONTEXT)
+                //.setProxy(new HttpHost("127.0.0.1", 8888)) // For Fiddler Debugging
                 .setDefaultCookieStore(cookieStore);
         httpHelper.init(builder.build());
     }
@@ -54,11 +57,15 @@ public class Session {
         cookieStore.clear();
     }
 
-    public void fromXML(String xml) {
-        SessionPersistenceHelper.fromXML(this, xml);
+    public void activate() throws IOException {
+        EntityUtils.consume(httpHelper.createGetBiliLiveHost(ACTIVATE_URL).getEntity());
     }
 
-    public String toXML() {
-        return SessionPersistenceHelper.toXML(this);
+    public void fromBase64(String base64) {
+        SessionPersistenceHelper.fromBase64(this, base64);
+    }
+
+    public String toBase64() {
+        return SessionPersistenceHelper.toBase64(this);
     }
 }

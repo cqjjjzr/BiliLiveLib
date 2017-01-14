@@ -70,7 +70,7 @@ public class DanmakuReceiver implements Runnable {
         checkArguments();
     }
 
-    private static long generateRandomUID() {
+    public static long generateRandomUID() {
         return (long) (1e14 + 2e14 * Math.random());
     }
 
