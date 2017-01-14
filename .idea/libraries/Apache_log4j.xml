@@ -1,0 +1,25 @@
+<component name="libraryTable">
+  <library name="Apache log4j">
+    <CLASSES>
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/site/apidocs" />
+    </JAVADOC>
+    <NATIVE>
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17" />
+    </NATIVE>
+    <SOURCES>
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/contribs/CekiGulcu" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/contribs/Jamie Tsao" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/contribs/JimMoore" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/contribs/ThomasFenner" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/src/main/java" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/src/main/javadoc" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/src/performance/java" />
+      <root url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17/tests/src/java" />
+    </SOURCES>
+    <jarDirectory url="file://D:/apache-lib/log4j-1.2.17/apache-log4j-1.2.17" recursive="false" />
+  </library>
+</component>

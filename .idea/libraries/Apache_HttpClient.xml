@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Apache HttpClient">
+    <CLASSES>
+      <root url="file://D:/apache-lib/httpcomponents-client-4.5.2-bin/httpcomponents-client-4.5.2/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://D:/apache-lib/httpcomponents-client-4.5.2-bin/httpcomponents-client-4.5.2/lib" recursive="false" />
+  </library>
+</component>

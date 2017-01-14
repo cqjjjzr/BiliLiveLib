@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="id" value="1479553650514" />
+    <option name="name" value="default" />
+  </component>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/BiliRecorderLib/pom.xml" />
+        <option value="$PROJECT_DIR$/BiliLiveLib/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-android-arm/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-linux-x86/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-linux-x86_64/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-macosx-x86_64/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-windows-x86/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/FFmpeg-windows-x86_64/pom.xml" />
+        <option value="E:/JavaAV/JavaAV-FFmpeg/pom.xml" />
+        <option value="E:/JavaAV/JavaAV/pom.xml" />
+        <option value="E:/JavaAV/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8 (1)" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

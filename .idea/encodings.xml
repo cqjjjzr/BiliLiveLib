@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://E:/JavaAV" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-android-arm" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-linux-x86" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-linux-x86_64" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-macosx-x86_64" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-windows-x86" charset="UTF-8" />
+    <file url="file://E:/JavaAV/JavaAV-FFmpeg/FFmpeg-windows-x86_64" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

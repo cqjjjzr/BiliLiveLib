@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Apache Commons-Configuration2">
+    <CLASSES>
+      <root url="file://D:/apache-lib/commons-configuration2-2.1-bin/commons-configuration2-2.1" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://D:/apache-lib/commons-configuration2-2.1-bin/commons-configuration2-2.1/apidocs" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://D:/apache-lib/commons-configuration2-2.1-bin/commons-configuration2-2.1" />
+    </SOURCES>
+    <jarDirectory url="file://D:/apache-lib/commons-configuration2-2.1-bin/commons-configuration2-2.1" recursive="false" />
+    <jarDirectory url="file://D:/apache-lib/commons-configuration2-2.1-bin/commons-configuration2-2.1" recursive="false" type="SOURCES" />
+  </library>
+</component>
