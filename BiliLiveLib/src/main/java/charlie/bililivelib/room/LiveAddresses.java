@@ -55,7 +55,7 @@ public class LiveAddresses {
     }
 
     private static void processInvalidLiveAddresses(String xmlString) throws BiliLiveException {
-        ErrorResponseJson responseJson = Globals.get().getGson().fromJson(xmlString, ErrorResponseJson.class);
+        ErrorResponseJson responseJson = Globals.get().gson().fromJson(xmlString, ErrorResponseJson.class);
         String message = generateInvalidLiveAddressesMessage(responseJson);
         throw new BiliLiveException(message);
     }

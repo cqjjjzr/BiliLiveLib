@@ -14,6 +14,6 @@ public class JoinServerJson {
     private long userID;
 
     private String generateJSON() {
-        return Globals.get().getGson().toJson(this);
+        return Globals.get().gson().toJson(this);
     }
 }

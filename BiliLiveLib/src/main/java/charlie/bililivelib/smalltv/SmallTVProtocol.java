@@ -1,18 +1,11 @@
 package charlie.bililivelib.smalltv;
 
 import charlie.bililivelib.BiliLiveException;
-import charlie.bililivelib.Globals;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.session.Session;
-import charlie.bililivelib.util.I18n;
 import com.google.gson.JsonObject;
-import org.apache.http.HttpResponse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-
-import static charlie.bililivelib.util.I18n.format;
 
 public class SmallTVProtocol {
     public static final int SUCCESS = 0;
@@ -41,31 +34,19 @@ public class SmallTVProtocol {
     public SmallTVRoom getSmallTVRoom(int roomID) throws BiliLiveException {
         if (roomID < 1) throw new IllegalArgumentException("roomID < 0");
 
-        try {
-            HttpResponse response = httpHelper.createGetBiliLiveHost(generateSmallTVRequest(roomID));
-            String jsonString = HttpHelper.responseToString(response);
-
-            JsonObject rootObject = Globals.get().getGson().fromJson(jsonString, JsonObject.class);
-            if (!isSmallTVAvailable(rootObject)) return null;
-
-            return Globals.get().getGson().fromJson(rootObject, SmallTVRoom.class);
-        } catch (IOException e) {
-            throw new BiliLiveException(format("exception.smalltv_room", roomID), e);
-        }
+        SmallTVRoom room = httpHelper.getBiliLiveJSON(generateSmallTVRequest(roomID), SmallTVRoom.class,
+                "exception.smalltv_room");
+        if (!isSmallTVAvailable(room)) return null;
+        return room;
     }
 
     public void joinLottery(SmallTV smallTV) throws BiliLiveException {
-        try {
-            HttpResponse response = httpHelper.createGetBiliLiveHost(generateJoinSmallTVRequest(
-                    smallTV.getRealRoomID(), smallTV.getSmallTVID()
-            ));
-            String jsonString = HttpHelper.responseToString(response);
+        JsonObject rootObject = httpHelper.getBiliLiveJSON(
+                generateJoinSmallTVRequest(smallTV.getRealRoomID(), smallTV.getSmallTVID()),
+                JsonObject.class,
+                "exception.smalltv_join");
 
-            JsonObject rootObject = Globals.get().getGson().fromJson(jsonString, JsonObject.class);
-            if (!isJoinSuccessfullyAndNotStarted(rootObject)) throw new BiliLiveException(getErrorMessage(rootObject));
-        } catch (IOException e) {
-            throw new BiliLiveException(format("exception.smalltv_join", smallTV.getRealRoomID()), e);
-        }
+        if (!isJoinSuccessfullyAndNotStarted(rootObject)) throw new BiliLiveException(getErrorMessage(rootObject));
     }
 
     private String getErrorMessage(JsonObject rootObject) {
@@ -83,8 +64,8 @@ public class SmallTVProtocol {
         return JOIN_STV_GET_PT1 + realRoomID + JOIN_STV_GET_PT2 + smallTVID;
     }
 
-    private boolean isSmallTVAvailable(JsonObject rootObject) {
-        return rootObject.get("code").getAsInt() == SUCCESS;
+    private boolean isSmallTVAvailable(SmallTVRoom room) {
+        return room.getCode() == SUCCESS;
     }
 
     @Contract(pure = true)
@@ -96,15 +77,8 @@ public class SmallTVProtocol {
     public SmallTVReward getReward(int smallTVID) throws BiliLiveException {
         if (smallTVID < 1) throw new IllegalArgumentException("SmallTVID < 1");
 
-        try {
-            HttpResponse response = httpHelper.createGetBiliLiveHost(generateGetRewardRequest(smallTVID));
-            String jsonString = HttpHelper.responseToString(response);
-            JsonObject rootObject = Globals.get().getGson().fromJson(jsonString, JsonObject.class);
-
-            return Globals.get().getGson().fromJson(rootObject, SmallTVReward.class);
-        } catch (IOException ex) {
-            throw new BiliLiveException(I18n.format("exception.smalltv_reward", smallTVID), ex);
-        }
+        return httpHelper.getBiliLiveJSON(generateGetRewardRequest(smallTVID), SmallTVReward.class,
+                "exception.smalltv_reward");
     }
 
     private boolean isGotReward(JsonObject rootObject) {

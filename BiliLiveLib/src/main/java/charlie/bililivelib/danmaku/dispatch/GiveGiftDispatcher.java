@@ -1,7 +1,6 @@
 package charlie.bililivelib.danmaku.dispatch;
 
 import charlie.bililivelib.Globals;
-import charlie.bililivelib.Globals;
 import charlie.bililivelib.danmaku.datamodel.GiveGiftInfo;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
@@ -21,7 +20,7 @@ public class GiveGiftDispatcher extends AbstractJSONDispatcher {
 
     @Override
     public void dispatch(List<DanmakuListener> listeners, JsonObject rootObject, Object source) {
-        GiveGiftInfo giveGiftInfo = Globals.get().getGson()
+        GiveGiftInfo giveGiftInfo = Globals.get().gson()
                 .fromJson(rootObject, GiveGiftInfo.class);
 
         DanmakuEvent event = new DanmakuEvent(source, giveGiftInfo, DanmakuEvent.Kind.GIVE_GIFT);

@@ -24,7 +24,7 @@ public abstract class AbstractJSONDispatcher implements Dispatcher {
     @Override
     public void tryDispatch(List<DanmakuListener> listeners, String body, Object source) {
         if (!isValid(body)) return;
-        JsonObject rootObject = Globals.get().getGson().fromJson(body, JsonObject.class);
+        JsonObject rootObject = Globals.get().gson().fromJson(body, JsonObject.class);
         if (!checkCanDispatch(rootObject))
             return;
 

@@ -2,6 +2,7 @@ package charlie.bililivelib;
 
 import charlie.bililivelib.net.BilibiliTrustStrategy;
 import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.util.OCRUtil;
 import com.gargoylesoftware.htmlunit.Cache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,12 +29,11 @@ public class Globals {
     private HttpHost biliPassportHttpsRoot;
     private ThreadLocal<Gson> gson;
     private ThreadLocal<Cache> htmlUnitCache;
-    @Getter
     private HttpClientConnectionManager connectionPool;
-    @Getter
     private HttpHelper noSessionHttpHelper;
     @Getter
     private SSLContext bilibiliSSLContext;
+    private OCRUtil ocrUtil;
 
     public static Globals get() {
         if (instance == null) {
@@ -44,9 +44,6 @@ public class Globals {
     }
     
     public void init() {
-        noSessionHttpHelper = new HttpHelper();
-        noSessionHttpHelper.init();
-
         biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT);
         //Visit bilibili passport via https. 443 is the https port.
         biliPassportHttpsRoot = new HttpHost(BILI_PASSPORT_HOST_ROOT, 443, "https");
@@ -54,7 +51,6 @@ public class Globals {
                 .setLenient()
                 .create());
         htmlUnitCache = ThreadLocal.withInitial(Cache::new);
-        connectionPool = new PoolingHttpClientConnectionManager(CONNECTION_ALIVE_TIME_SECOND, TimeUnit.SECONDS);
         try {
             bilibiliSSLContext = SSLContextBuilder.create()
                     .loadTrustMaterial(new BilibiliTrustStrategy())
@@ -64,11 +60,33 @@ public class Globals {
         }
     }
 
-    public Gson getGson() {
+    public Gson gson() {
         return gson.get();
     }
 
     public Cache getHtmlUnitCache() {
         return htmlUnitCache.get();
+    }
+
+    public HttpClientConnectionManager getConnectionPool() {
+        if (connectionPool == null) {
+            connectionPool = new PoolingHttpClientConnectionManager(CONNECTION_ALIVE_TIME_SECOND, TimeUnit.SECONDS);
+        }
+        return connectionPool;
+    }
+
+    public OCRUtil getOcrUtil() {
+        if (ocrUtil == null) {
+            ocrUtil = new OCRUtil();
+        }
+        return ocrUtil;
+    }
+
+    public HttpHelper getNoSessionHttpHelper() {
+        if (noSessionHttpHelper == null) {
+            noSessionHttpHelper = new HttpHelper();
+            noSessionHttpHelper.init();
+        }
+        return noSessionHttpHelper;
     }
 }

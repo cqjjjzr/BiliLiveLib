@@ -119,7 +119,7 @@ public class Room {
     }
 
     public void fromJson(@NotNull String jsonString) throws BiliLiveException {
-        RoomInfoResponseJson jsonObject = Globals.get().getGson()
+        RoomInfoResponseJson jsonObject = Globals.get().gson()
                 .fromJson(jsonString, RoomInfoResponseJson.class);
 
         if (jsonObject.getCode() != RESPONSE_SUCCESS_CODE) {

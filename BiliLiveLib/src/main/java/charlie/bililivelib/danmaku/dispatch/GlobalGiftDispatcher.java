@@ -22,7 +22,7 @@ public class GlobalGiftDispatcher extends AbstractJSONDispatcher {
     public void dispatch(List<DanmakuListener> listeners, JsonObject rootObject, Object source) {
         if (!rootObject.has("tv_id")) return; //NOT A SMALL TV OBJECT.
 
-        SmallTV smallTV = Globals.get().getGson()
+        SmallTV smallTV = Globals.get().gson()
                 .fromJson(rootObject, SmallTV.class);
         DanmakuEvent event = new DanmakuEvent(source, smallTV, DanmakuEvent.Kind.GLOBAL_GIFT);
         for(DanmakuListener listener : listeners) {

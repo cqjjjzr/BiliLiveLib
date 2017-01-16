@@ -7,7 +7,6 @@ import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.session.Session;
-import charlie.bililivelib.session.SessionLoginHelper;
 import charlie.bililivelib.smalltv.SmallTV;
 import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.smalltv.SmallTVReward;
@@ -20,13 +19,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
+import static charlie.bililivelib.TestSessionHelper.initSession;
+import static charlie.bililivelib.TestSessionHelper.testInput;
 import static org.junit.Assert.assertTrue;
 
 public class DanmakuReceiverAndSmallTVTest {
@@ -39,52 +35,8 @@ public class DanmakuReceiverAndSmallTVTest {
     public static void init() throws IOException {
         I18n.init();
         LogUtil.init();
-        session = new Session(Globals.get().getConnectionPool());
 
-        initSession();
-    }
-
-    private static void initSession() throws IOException {
-        Path cookieFile = Paths.get("cookies.bin");
-        if (Files.exists(cookieFile)) {
-            loadSessionFromFile();
-        } else {
-            login();
-            Files.createFile(cookieFile);
-        }
-        session.activate();
-
-        Files.write(cookieFile, session.toBase64().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-    }
-
-    private static void login() throws IOException {
-        String email = testInput("E-Mail:");
-        String password = testInput("Password:");
-
-        SessionLoginHelper helper = new SessionLoginHelper(email, password,
-                SessionLoginHelper.DEFAULT_LOGIN_TIMEOUT_MILLIS,
-                true);
-        helper.startLogin();
-        JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
-                JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));
-
-        String captcha = testInput("Captcha:");
-        helper.loginWithCaptcha(captcha);
-
-        System.out.println(helper.getStatus());
-        assertTrue(helper.getStatus() == SessionLoginHelper.LoginStatus.SUCCESS);
-
-        helper.fillSession(session);
-    }
-
-    private static void loadSessionFromFile() throws IOException {
-        String xml = new String(Files.readAllBytes(Paths.get("cookies.bin")));
-        session.fromBase64(xml);
-    }
-
-    private static String testInput(String message) {
-        return JOptionPane.showInputDialog(null, message, "Test",
-                JOptionPane.PLAIN_MESSAGE);
+        session = initSession();
     }
 
     @Ignore

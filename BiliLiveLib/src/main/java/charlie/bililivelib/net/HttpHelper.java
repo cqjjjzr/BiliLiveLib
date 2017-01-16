@@ -1,7 +1,9 @@
 package charlie.bililivelib.net;
 
+import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.util.I18n;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -79,5 +81,28 @@ public class HttpHelper {
         }
 
         return httpClient.execute(httpGet);
+    }
+
+    public <T> T getJSON(HttpHost httpHost, String url, Class<T> clazz, String exceptionKey) throws BiliLiveException {
+        try {
+            HttpResponse response = this.createGetResponse(httpHost, url);
+            String jsonString = HttpHelper.responseToString(response);
+
+            return Globals.get().gson().fromJson(jsonString, clazz);
+        } catch (IOException e) {
+            throw new BiliLiveException(I18n.getString(exceptionKey), e);
+        }
+    }
+
+    public <T> T getBiliLiveJSON(String url, Class<T> clazz, String exceptionKey) throws BiliLiveException {
+        return getJSON(biliLiveRoot, url, clazz, exceptionKey);
+    }
+
+    public void executeGet(HttpHost httpHost, String url) throws IOException {
+        EntityUtils.consume(this.createGetResponse(httpHost, url).getEntity());
+    }
+
+    public void executeBiliLiveGet(String url) throws IOException {
+        executeGet(biliLiveRoot, url);
     }
 }

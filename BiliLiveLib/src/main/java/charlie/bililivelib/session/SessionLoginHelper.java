@@ -125,7 +125,7 @@ public class SessionLoginHelper {
             status = KEY_ERROR;
             return;
         }
-        Gson gson = Globals.get().getGson();
+        Gson gson = Globals.get().gson();
         JsonObject rootObject = gson.fromJson(statusJSON, JsonElement.class).getAsJsonObject();
         if (rootObject.get("status").getAsBoolean()) {
             status = SUCCESS;

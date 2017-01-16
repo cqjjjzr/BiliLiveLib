@@ -189,7 +189,7 @@ public class DanmakuReceiver implements Runnable {
     private void joinServer() throws IOException {
         JoinServerJson json = new JoinServerJson(room.getRoomID(), uid);
         writePacket(new DanmakuPacket(DanmakuPacket.Action.JOIN_SERVER,
-                Globals.get().getGson().toJson(json)));
+                Globals.get().gson().toJson(json)));
     }
 
     private void writeHeartbeat() throws IOException {

@@ -10,7 +10,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -52,13 +51,12 @@ public class Session {
     }
 
     public void logout() throws IOException {
-        EntityUtils.consume(httpHelper.createGetResponse(Globals.get().getBiliPassportHttpsRoot(),
-                EXIT_URL_G).getEntity());
+        httpHelper.executeGet(Globals.get().getBiliPassportHttpsRoot(), EXIT_URL_G);
         cookieStore.clear();
     }
 
     public void activate() throws IOException {
-        EntityUtils.consume(httpHelper.createGetBiliLiveHost(ACTIVATE_URL).getEntity());
+        httpHelper.executeBiliLiveGet(ACTIVATE_URL);
     }
 
     public void fromBase64(String base64) {

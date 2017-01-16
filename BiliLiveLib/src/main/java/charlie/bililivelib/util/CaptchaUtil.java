@@ -14,6 +14,10 @@ public class CaptchaUtil {
         //scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
     }
 
+    public CaptchaUtil(OCRUtil ocrUtil) {
+        this.ocrUtil = ocrUtil;
+    }
+
     /**
      * Calculate the calculating captcha image. Used at getting Free Silver Treasures.<br />
      * <s>It recognizes the image into string and then eval it as JavaScript. So we get the result of the formula.</s>
