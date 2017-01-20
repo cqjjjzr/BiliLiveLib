@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3627df44-8b2e-4611-aed5-efd9a069ee3a" name="Default" comment="refactor!">
+    <list default="true" id="3627df44-8b2e-4611-aed5-efd9a069ee3a" name="Default" comment="missing files.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -49,7 +49,18 @@
     <favorites_list name="BiliRecorder" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="18" column="13" lean-forward="true" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -111,7 +122,7 @@
     <option name="SIGN_OFF_COMMIT" value="true" />
     <push-targets>
       <push-target-info repo="E:/JavaAV" source="master" target-remote="origin-charlie" target-branch="master" />
-      <push-target-info repo="$PROJECT_DIR$" source="master" target-remote="origin" target-branch="master" />
+      <push-target-info repo="$PROJECT_DIR$" source="master" target-remote="origin-coding.net" target-branch="master" />
     </push-targets>
   </component>
   <component name="GradleLocalSettings">
@@ -157,7 +168,6 @@
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/session/SessionLoginHelper.java" />
         <option value="$PROJECT_DIR$/BiliLiveLib/cookies.xml" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/session/SessionPersistenceHelper.java" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/freesilver/FreeSilverProcotol.java" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/MiscellaneousProtocol.java" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/SignProtocol.java" />
@@ -184,6 +194,7 @@
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/BiliLiveLib.java" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/net/HttpHelper.java" />
         <option value="$PROJECT_DIR$/BiliLiveLib/src/main/java/charlie/bililivelib/user/HeartbeatProtocol.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -1517,7 +1528,14 @@
       <option name="project" value="LOCAL" />
       <updated>1484895835710</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="missing files.">
+      <created>1484895938864</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1484895938864</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1617,7 +1635,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
-    <MESSAGE value="Safety disconnect for danmaku." />
     <MESSAGE value="More dispatchers." />
     <MESSAGE value="Start work on SmallTV." />
     <MESSAGE value="Name Change: GlobalObjects to Globals." />
@@ -1642,7 +1659,8 @@
     <MESSAGE value="Silver Seeds!" />
     <MESSAGE value="refactor!" />
     <MESSAGE value="fix the heartbeating needs Referer header." />
-    <option name="LAST_COMMIT_MESSAGE" value="fix the heartbeating needs Referer header." />
+    <MESSAGE value="missing files." />
+    <option name="LAST_COMMIT_MESSAGE" value="missing files." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1748,13 +1766,6 @@
         <state relative-caret-position="78">
           <caret line="59" column="39" lean-forward="true" selection-start-line="59" selection-start-column="39" selection-end-line="59" selection-end-column="39" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="12" column="28" lean-forward="true" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -2094,6 +2105,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="30" column="42" lean-forward="false" selection-start-line="30" selection-start-column="42" selection-end-line="30" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="18" column="13" lean-forward="true" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
           <folding />
         </state>
       </provider>
