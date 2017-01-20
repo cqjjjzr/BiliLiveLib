@@ -1,6 +1,5 @@
 package charlie.bililivelib.danmaku;
 
-import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
 import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
@@ -8,6 +7,7 @@ import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
 import charlie.bililivelib.danmaku.dispatch.DispatchManager;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
+import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.util.I18n;
 import lombok.Getter;

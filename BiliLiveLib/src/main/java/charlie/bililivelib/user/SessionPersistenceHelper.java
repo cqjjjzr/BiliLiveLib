@@ -1,4 +1,4 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;

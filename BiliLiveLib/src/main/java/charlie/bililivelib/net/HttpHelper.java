@@ -1,8 +1,8 @@
 package charlie.bililivelib.net;
 
-import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.util.I18n;
 import lombok.Getter;
 import org.apache.http.HttpHost;

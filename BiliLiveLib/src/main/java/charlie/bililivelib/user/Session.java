@@ -1,4 +1,4 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
@@ -55,7 +55,7 @@ public class Session {
         cookieStore.clear();
     }
 
-    public void activate() throws IOException {
+    protected void activate() throws IOException {
         httpHelper.executeBiliLiveGet(ACTIVATE_URL);
     }
 

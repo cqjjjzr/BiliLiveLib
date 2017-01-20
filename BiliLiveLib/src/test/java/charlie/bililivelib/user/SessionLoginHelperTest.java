@@ -1,4 +1,4 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import org.junit.Test;
 
@@ -13,7 +13,6 @@ public class SessionLoginHelperTest {
         String password = testInput("Password:");
 
         SessionLoginHelper helper = new SessionLoginHelper(email, password);
-        helper.startLogin();
         JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
                 JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));
 

@@ -1,9 +1,11 @@
 package charlie.bililivelib.freesilver;
 
-import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NotLoggedInException;
+import charlie.bililivelib.exceptions.WrongCaptchaException;
 import charlie.bililivelib.net.HttpHelper;
-import charlie.bililivelib.session.Session;
+import charlie.bililivelib.user.Session;
 import charlie.bililivelib.util.CaptchaUtil;
 import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.util.MiscUtil;
@@ -29,6 +31,7 @@ public class FreeSilverProtocol {
     private static final String EXCEPTION_KEY = "exception.freeSilver";
     private static final int _1_KB = 1024;
     private static final String MIME_JPEG = "image/jpeg";
+    private static final int STATUS_NOT_LOGIN = -101;
     private HttpHelper httpHelper;
 
     public FreeSilverProtocol(Session session) {
@@ -47,9 +50,12 @@ public class FreeSilverProtocol {
         try {
             HttpResponse response = httpHelper.createGetBiliLiveHost(CAPTCHA_G);
             if (!response.getEntity().getContentType().getValue().equals(MIME_JPEG)) { // Returned a JSON instead of an image
-                String errorMsg = HttpHelper.responseToString(response);
+                String jsonString = HttpHelper.responseToString(response);
+                JsonObject rootObject = Globals.get().gson().fromJson(jsonString, JsonObject.class);
+                if (rootObject.get("code").getAsInt() == STATUS_NOT_LOGIN)
+                    throw new NotLoggedInException();
                 throw new BiliLiveException(I18n.format("freeSilver.captcha",
-                        Globals.get().gson().fromJson(errorMsg, JsonObject.class)));
+                        Globals.get().gson().fromJson(jsonString, JsonObject.class)));
             }
             return ImageIO.read(HttpHelper.responseToInputStream(response));
         } catch (IOException e) {
@@ -97,8 +103,11 @@ public class FreeSilverProtocol {
     }
 
     public GetSilverInfo getNowSilver(long timeStart, long timeEnd, String captcha) throws BiliLiveException {
-        return httpHelper.getBiliLiveJSON(
+        GetSilverInfo info = httpHelper.getBiliLiveJSON(
                 generateGetSilverRequest(timeStart, timeEnd, captcha), GetSilverInfo.class, EXCEPTION_KEY);
+        if (info.status() == GetSilverInfo.Status.WRONG_OR_EXPIRED_CAPTCHA) throw new WrongCaptchaException();
+        if (info.status() == GetSilverInfo.Status.NOT_LOGGED_IN) throw new NotLoggedInException();
+        return info;
     }
 
     @NotNull
@@ -132,7 +141,7 @@ public class FreeSilverProtocol {
         }
 
         public enum Status {
-            SUCCESS(0), EXPIRE(-99), WRONG_OR_EXPIRED_CAPTCHA(-400), NOT_LOGIN(-101), EMPTY(-10017), UNKNOWN(Integer.MIN_VALUE);
+            SUCCESS(0), EXPIRE(-99), WRONG_OR_EXPIRED_CAPTCHA(-400), NOT_LOGGED_IN(-101), EMPTY(-10017), UNKNOWN(Integer.MIN_VALUE);
 
             private int code;
 

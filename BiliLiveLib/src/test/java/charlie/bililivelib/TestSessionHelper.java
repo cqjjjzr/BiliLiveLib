@@ -1,7 +1,8 @@
 package charlie.bililivelib;
 
-import charlie.bililivelib.session.Session;
-import charlie.bililivelib.session.SessionLoginHelper;
+import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.user.Session;
+import charlie.bililivelib.user.SessionLoginHelper;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.nio.file.StandardOpenOption;
 import static org.junit.Assert.assertTrue;
 
 public class TestSessionHelper {
-    public static Session initSession() throws IOException {
+    public static Session initSession() throws IOException, BiliLiveException {
         Session session = new Session(Globals.get().getConnectionPool());
         Path cookieFile = Paths.get("cookies.bin");
         if (Files.exists(cookieFile)) {
@@ -22,20 +23,18 @@ public class TestSessionHelper {
             login(session);
             Files.createFile(cookieFile);
         }
-        session.activate();
 
         Files.write(cookieFile, session.toBase64().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
         return session;
     }
 
-    private static void login(Session session) throws IOException {
+    private static void login(Session session) throws BiliLiveException {
         String email = testInput("E-Mail:");
         String password = testInput("Password:");
 
         SessionLoginHelper helper = new SessionLoginHelper(email, password,
                 SessionLoginHelper.DEFAULT_LOGIN_TIMEOUT_MILLIS,
                 true);
-        helper.startLogin();
         JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
                 JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));
 

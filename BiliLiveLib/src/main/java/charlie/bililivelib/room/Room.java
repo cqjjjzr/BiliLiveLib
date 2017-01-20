@@ -1,11 +1,11 @@
 package charlie.bililivelib.room;
 
-import charlie.bililivelib.BiliLiveException;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.datamodel.UserGuardLevel;
+import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.room.datamodel.RoomInfoResponseJson;
-import charlie.bililivelib.session.Session;
+import charlie.bililivelib.user.Session;
 import charlie.bililivelib.util.I18n;
 import lombok.AccessLevel;
 import lombok.Getter;

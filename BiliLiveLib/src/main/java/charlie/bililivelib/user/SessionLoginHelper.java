@@ -1,7 +1,10 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NetworkException;
+import charlie.bililivelib.exceptions.WrongCaptchaException;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -23,7 +26,7 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Set;
 
-import static charlie.bililivelib.session.SessionLoginHelper.LoginStatus.*;
+import static charlie.bililivelib.user.SessionLoginHelper.LoginStatus.*;
 
 @Getter
 public class SessionLoginHelper {
@@ -53,12 +56,12 @@ public class SessionLoginHelper {
 
     private LoginStatus status = NOT_COMPLETED;
 
-    public SessionLoginHelper(@NotNull String email, @NotNull String password) {
+    public SessionLoginHelper(@NotNull String email, @NotNull String password) throws BiliLiveException {
         this(email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN);
     }
 
     public SessionLoginHelper(@NotNull String email, @NotNull String password,
-                              long loginTimeoutMillis, boolean keepLoggingIn) {
+                              long loginTimeoutMillis, boolean keepLoggingIn) throws BiliLiveException {
         this.email = email;
         this.password = password;
         checkArguments();
@@ -67,6 +70,7 @@ public class SessionLoginHelper {
 
         webClient = new WebClient(BrowserVersion.BEST_SUPPORTED/*, "127.0.0.1", 8888*/); // Commented code is for Fiddler Debugging.
         initWebClient();
+        startLogin();
     }
 
     private void initWebClient() {
@@ -107,15 +111,19 @@ public class SessionLoginHelper {
         });
     }
 
-    public void startLogin() throws IOException {
-        status = NOT_COMPLETED;
-        miniLoginPage = webClient.getPage(MINILOGIN_URL);
-        miniLoginPage.executeJavaScript(LOGIN_JAVASCRIPT);
-        webClient.setStatusHandler((page, message) -> {
-            if (page == miniLoginPage) {
-                parseStatus(message);
-            }
-        });
+    private void startLogin() throws BiliLiveException {
+        try {
+            status = NOT_COMPLETED;
+            miniLoginPage = webClient.getPage(MINILOGIN_URL);
+            miniLoginPage.executeJavaScript(LOGIN_JAVASCRIPT);
+            webClient.setStatusHandler((page, message) -> {
+                if (page == miniLoginPage) {
+                    parseStatus(message);
+                }
+            });
+        } catch (IOException ex) {
+            throw new NetworkException("IO Exception", ex);
+        }
     }
 
     private void parseStatus(@NonNls String statusJSON) {
@@ -137,34 +145,49 @@ public class SessionLoginHelper {
         status = LoginStatus.forCode(errorCode);
     }
 
-    public Image getCaptcha() throws IOException {
-        HtmlImage image = (HtmlImage) miniLoginPage.getByXPath("//img[@class='captcha-img']").get(0);
-        return image.getImageReader().read(0);
+    public Image getCaptcha() throws BiliLiveException {
+        try {
+            HtmlImage image = (HtmlImage) miniLoginPage.getByXPath("//img[@class='captcha-img']").get(0);
+            return image.getImageReader().read(0);
+        } catch (IOException ex) {
+            throw new NetworkException("IO Exception", ex);
+        }
     }
 
-    public void loginWithCaptcha(String captcha) throws IOException {
-        miniLoginPage.getElementById("login-username").setAttribute("value", email);
-        miniLoginPage.getElementById("login-passwd").setAttribute("value", password);
-        miniLoginPage.getElementById("login-captcha").setAttribute("value", captcha);
+    public void loginWithCaptcha(String captcha) throws BiliLiveException {
+        try {
+            miniLoginPage.getElementById("login-username").setAttribute("value", email);
+            miniLoginPage.getElementById("login-passwd").setAttribute("value", password);
+            miniLoginPage.getElementById("login-captcha").setAttribute("value", captcha);
 
-        // This operation will block to wait until ajax performs completely.
-        // Thanks to NicelyResynchronizingAjaxController.
-        miniLoginPage.getHtmlElementById("login-submit").click();
+            // This operation will block to wait until ajax performs completely.
+            // Thanks to NicelyResynchronizingAjaxController.
+            miniLoginPage.getHtmlElementById("login-submit").click();
+            if (status == WRONG_CAPTCHA) throw new WrongCaptchaException();
 
-        // WARNING: USED Experimental API HERE!
-        // webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
-        // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
+            // WARNING: USED Experimental API HERE!
+            // webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
+            // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
+        } catch (IOException ex) {
+            throw new NetworkException("IO Exception", ex);
+        }
     }
 
-    public void fillSession(Session session) throws IOException {
-        if (status != SUCCESS) throw new IllegalStateException("Bad status: " + status);
+    public void fillSession(Session session) throws BiliLiveException {
+        try {
+            if (status != SUCCESS) throw new IllegalStateException("Bad status: " + status);
 
-        Set<Cookie> cookies = webClient.getCookieManager().getCookies();
+            Set<Cookie> cookies = webClient.getCookieManager().getCookies();
 
-        CookieStore store = session.getCookieStore();
-        store.clear();
-        for (Cookie cookie : cookies) {
-            store.addCookie(cookie.toHttpClient()); // HtmlUnit Cookie to HttpClient Cookie
+            CookieStore store = session.getCookieStore();
+            store.clear();
+            for (Cookie cookie : cookies) {
+                store.addCookie(cookie.toHttpClient()); // HtmlUnit Cookie to HttpClient Cookie
+            }
+
+            if (getStatus() == SUCCESS) session.activate();
+        } catch (IOException ex) {
+            throw new NetworkException("IO Exception", ex);
         }
     }
 

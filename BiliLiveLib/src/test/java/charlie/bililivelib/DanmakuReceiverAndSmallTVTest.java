@@ -5,11 +5,12 @@ import charlie.bililivelib.danmaku.dispatch.GlobalAnnounceDispatcher;
 import charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
+import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
-import charlie.bililivelib.session.Session;
 import charlie.bililivelib.smalltv.SmallTV;
 import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.smalltv.SmallTVReward;
+import charlie.bililivelib.user.Session;
 import charlie.bililivelib.util.I18n;
 import charlie.bililivelib.util.LogUtil;
 import org.apache.logging.log4j.Level;
@@ -18,8 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static charlie.bililivelib.TestSessionHelper.initSession;
 import static charlie.bililivelib.TestSessionHelper.testInput;
@@ -32,7 +31,7 @@ public class DanmakuReceiverAndSmallTVTest {
     private static Session session;
 
     @BeforeClass
-    public static void init() throws IOException {
+    public static void init() throws Exception {
         I18n.init();
         LogUtil.init();
 

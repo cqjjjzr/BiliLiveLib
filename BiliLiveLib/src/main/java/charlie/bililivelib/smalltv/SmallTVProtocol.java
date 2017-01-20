@@ -1,8 +1,9 @@
 package charlie.bililivelib.smalltv;
 
-import charlie.bililivelib.BiliLiveException;
+import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NotLoggedInException;
 import charlie.bililivelib.net.HttpHelper;
-import charlie.bililivelib.session.Session;
+import charlie.bililivelib.user.Session;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -13,8 +14,9 @@ public class SmallTVProtocol {
     private static final int JOINED_AND_NOT_STARTED = 1;
     private static final String JOIN_STV_GET_PT1 = "/SmallTV/join?roomid=";
     private static final String JOIN_STV_GET_PT2 = "&id=";
-    private static final String GET_CURRENT_STV_GET = "/SmallT/index?roomid=";
+    private static final String GET_CURRENT_STV_GET = "/SmallTV/index?roomid=";
     private static final String GET_REWARD_GET = "/SmallTV/getReward?id=";
+    private static final int STATUS_NOT_LOGGED_IN = -101;
     private final HttpHelper httpHelper;
 
     public SmallTVProtocol(Session session) {
@@ -46,7 +48,12 @@ public class SmallTVProtocol {
                 JsonObject.class,
                 "exception.smalltv_join");
 
+        if (isNotLoggedIn(rootObject)) throw new NotLoggedInException();
         if (!isJoinSuccessfullyAndNotStarted(rootObject)) throw new BiliLiveException(getErrorMessage(rootObject));
+    }
+
+    private boolean isNotLoggedIn(JsonObject rootObject) {
+        return rootObject.get("code").getAsInt() == STATUS_NOT_LOGGED_IN;
     }
 
     private String getErrorMessage(JsonObject rootObject) {

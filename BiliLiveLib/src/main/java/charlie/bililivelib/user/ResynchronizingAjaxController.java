@@ -1,4 +1,4 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import com.gargoylesoftware.htmlunit.AjaxController;
 import com.gargoylesoftware.htmlunit.WebRequest;

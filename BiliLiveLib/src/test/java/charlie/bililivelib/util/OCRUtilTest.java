@@ -1,7 +1,7 @@
 package charlie.bililivelib.util;
 
 import charlie.bililivelib.net.HttpHelper;
-import charlie.bililivelib.session.Session;
+import charlie.bililivelib.user.Session;
 import lombok.Data;
 import org.apache.http.client.HttpClient;
 import org.apache.http.cookie.Cookie;

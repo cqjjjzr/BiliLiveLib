@@ -1,4 +1,4 @@
-package charlie.bililivelib;
+package charlie.bililivelib.exceptions;
 
 import charlie.bililivelib.util.I18n;
 import org.jetbrains.annotations.Nls;
@@ -6,6 +6,10 @@ import org.jetbrains.annotations.Nls;
 import java.util.Arrays;
 
 public class BiliLiveException extends Exception {
+    public BiliLiveException() {
+        super();
+    }
+
     public BiliLiveException(String message) {
         super(message);
     }

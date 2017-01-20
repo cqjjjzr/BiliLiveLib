@@ -1,4 +1,4 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
 import charlie.bililivelib.util.I18n;
 import org.apache.http.cookie.Cookie;
@@ -31,7 +31,7 @@ public class SessionTest {
         Session session = new Session(null, store);
         BasicClientCookie cookie = new BasicClientCookie("name1", "value1");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2200, 5, 3, 22, 33, 55);
+        calendar.set(2200, Calendar.JUNE, 3, 22, 33, 55);
         cookie.setExpiryDate(calendar.getTime());
         cookie.setDomain("live.bilibili.com");
         cookie.setPath("/");

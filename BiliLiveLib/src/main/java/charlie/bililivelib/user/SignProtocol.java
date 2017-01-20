@@ -1,6 +1,7 @@
-package charlie.bililivelib.session;
+package charlie.bililivelib.user;
 
-import charlie.bililivelib.BiliLiveException;
+import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NotLoggedInException;
 import charlie.bililivelib.net.HttpHelper;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
@@ -12,6 +13,7 @@ public class SignProtocol {
     private static final String EXCEPTION_SIGN = "exception.sign";
     private static final String SIGN_INFO_G = "/sign/GetSignInfo";
     private static final String DO_SIGN_IN_G = "/sign/doSign";
+    private static final int STATUS_NOT_LOGGED_IN = -105;
     private HttpHelper httpHelper;
 
     public SignProtocol(Session session) {
@@ -19,11 +21,15 @@ public class SignProtocol {
     }
 
     public DoSignInfo signIn() throws BiliLiveException {
-        return httpHelper.getBiliLiveJSON(DO_SIGN_IN_G, DoSignInfo.class, EXCEPTION_SIGN);
+        DoSignInfo doSignInfo = httpHelper.getBiliLiveJSON(DO_SIGN_IN_G, DoSignInfo.class, EXCEPTION_SIGN);
+        if (doSignInfo.getCode() == -101) throw new NotLoggedInException();
+        return doSignInfo;
     }
 
     public SignInfo getCurrentSignInfo() throws BiliLiveException {
-        return httpHelper.getBiliLiveJSON(SIGN_INFO_G, SignInfo.class, EXCEPTION_SIGN);
+        SignInfo info = httpHelper.getBiliLiveJSON(SIGN_INFO_G, SignInfo.class, EXCEPTION_SIGN);
+        if (info.getCode() == STATUS_NOT_LOGGED_IN) throw new NotLoggedInException();
+        return info;
     }
 
     @Getter
