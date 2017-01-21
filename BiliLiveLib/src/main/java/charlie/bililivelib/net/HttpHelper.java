@@ -86,9 +86,7 @@ public class HttpHelper {
     public <T> T getJSON(HttpHost httpHost, String url, Class<T> clazz, String exceptionKey) throws BiliLiveException {
         try {
             HttpResponse response = this.createGetResponse(httpHost, url);
-            String jsonString = HttpHelper.responseToString(response);
-
-            return Globals.get().gson().fromJson(jsonString, clazz);
+            return responseToObject(response, clazz, exceptionKey);
         } catch (IOException e) {
             throw new BiliLiveException(I18n.getString(exceptionKey), e);
         }
@@ -96,6 +94,27 @@ public class HttpHelper {
 
     public <T> T getBiliLiveJSON(String url, Class<T> clazz, String exceptionKey) throws BiliLiveException {
         return getJSON(biliLiveRoot, url, clazz, exceptionKey);
+    }
+
+    public <T> T postJSON(HttpHost httpHost, String url, PostArguments arguments,
+                          Class<T> clazz, String exceptionKey) throws BiliLiveException {
+        try {
+            HttpResponse response = this.createPostResponse(httpHost, url, arguments);
+            return responseToObject(response, clazz, exceptionKey);
+        } catch (IOException e) {
+            throw new BiliLiveException(I18n.getString(exceptionKey), e);
+        }
+    }
+
+    public <T> T postBiliLiveJSON(String url, PostArguments arguments,
+                                  Class<T> clazz, String exceptionKey) throws BiliLiveException {
+        return postJSON(biliLiveRoot, url, arguments, clazz, exceptionKey);
+    }
+
+    public <T> T responseToObject(HttpResponse response, Class<T> clazz, String exceptionKey) throws IOException {
+        String jsonString = HttpHelper.responseToString(response);
+
+        return Globals.get().gson().fromJson(jsonString, clazz);
     }
 
     public void executeGet(HttpHost httpHost, String url) throws IOException {

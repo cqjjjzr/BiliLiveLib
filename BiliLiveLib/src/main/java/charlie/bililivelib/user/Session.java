@@ -3,7 +3,6 @@ package charlie.bililivelib.user;
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.net.HttpHelper;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -21,7 +20,7 @@ public class Session {
 
     private static final SSLContext BILIBILI_SSL_CONTEXT = Globals.get().getBilibiliSSLContext();
     private HttpHelper httpHelper;
-    @Getter(AccessLevel.PROTECTED)
+    @Getter
     private CookieStore cookieStore;
 
     public Session() {

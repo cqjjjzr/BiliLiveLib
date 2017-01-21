@@ -26,8 +26,8 @@ public class FreeSilverProtocolTest {
                 info = protocol.waitToGetSilver();
                 System.out.println(info);
             } catch (Exception e) {
-                if (e.getMessage().contains("FINISHED"))
-                    return;
+                //if (e.getMessage().contains("FINISHED"))
+                //return;
                 e.printStackTrace();
             }
         } while (info == null || !info.isEnd());

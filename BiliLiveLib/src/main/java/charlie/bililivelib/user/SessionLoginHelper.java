@@ -3,7 +3,6 @@ package charlie.bililivelib.user;
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.exceptions.BiliLiveException;
-import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.WrongCaptchaException;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
@@ -122,7 +121,7 @@ public class SessionLoginHelper {
                 }
             });
         } catch (IOException ex) {
-            throw new NetworkException("IO Exception", ex);
+            throw new BiliLiveException("IO Exception", ex);
         }
     }
 
@@ -150,7 +149,7 @@ public class SessionLoginHelper {
             HtmlImage image = (HtmlImage) miniLoginPage.getByXPath("//img[@class='captcha-img']").get(0);
             return image.getImageReader().read(0);
         } catch (IOException ex) {
-            throw new NetworkException("IO Exception", ex);
+            throw new BiliLiveException("IO Exception", ex);
         }
     }
 
@@ -169,7 +168,7 @@ public class SessionLoginHelper {
             // webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
             // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
         } catch (IOException ex) {
-            throw new NetworkException("IO Exception", ex);
+            throw new BiliLiveException("IO Exception", ex);
         }
     }
 
@@ -187,7 +186,7 @@ public class SessionLoginHelper {
 
             if (getStatus() == SUCCESS) session.activate();
         } catch (IOException ex) {
-            throw new NetworkException("IO Exception", ex);
+            throw new BiliLiveException("IO Exception", ex);
         }
     }
 
