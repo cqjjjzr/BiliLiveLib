@@ -1,13 +1,23 @@
 package charlie.bililivelib.danmaku.event;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface DanmakuListener {
-    void danmakuEvent(DanmakuEvent event);
-    void watcherCountEvent(DanmakuEvent event);
-    void errorEvent(DanmakuEvent event);
-    void startStopEvent(DanmakuEvent event);
-    void statusEvent(DanmakuEvent event);
-    void welcomeVipEvent(DanmakuEvent event);
-    void giveGiftEvent(DanmakuEvent event);
-    void globalGiftEvent(DanmakuEvent event);
-    void globalAnnounceEvent(DanmakuEvent event);
+    void danmakuEvent(@NotNull DanmakuEvent event);
+
+    void watcherCountEvent(@NotNull DanmakuEvent event);
+
+    void errorEvent(@NotNull DanmakuEvent event);
+
+    void startStopEvent(@NotNull DanmakuEvent event);
+
+    void statusEvent(@NotNull DanmakuEvent event);
+
+    void welcomeVipEvent(@NotNull DanmakuEvent event);
+
+    void giveGiftEvent(@NotNull DanmakuEvent event);
+
+    void globalGiftEvent(@NotNull DanmakuEvent event);
+
+    void globalAnnounceEvent(@NotNull DanmakuEvent event);
 }

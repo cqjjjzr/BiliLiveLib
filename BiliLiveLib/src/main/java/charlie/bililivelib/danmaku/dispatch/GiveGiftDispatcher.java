@@ -5,6 +5,7 @@ import charlie.bililivelib.danmaku.datamodel.GiveGiftInfo;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -12,6 +13,15 @@ public class GiveGiftDispatcher extends AbstractJSONDispatcher {
     public static final String[] ACCEPTABLE_COMMANDS = {
         "SEND_GIFT"
     };
+    private static GiveGiftDispatcher GLOBAL_INSTANCE;
+
+    @NotNull
+    public static GiveGiftDispatcher getGlobalInstance() {
+        if (GLOBAL_INSTANCE == null) {
+            GLOBAL_INSTANCE = new GiveGiftDispatcher();
+        }
+        return GLOBAL_INSTANCE;
+    }
 
     @Override
     protected String[] getAcceptableCommands() {

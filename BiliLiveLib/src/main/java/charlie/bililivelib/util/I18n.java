@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class I18n {
+    public static final String BUNDLE_NAME = "BiliLiveLib";
     private static Map<String, String> strings;
 
     public static void init() {
@@ -18,7 +19,7 @@ public class I18n {
     }
 
     private static void fillResourceBundle() {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("BiliLiveLib");
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
         for (String key : resourceBundle.keySet()) {
             strings.put(key, resourceBundle.getString(key));
         }

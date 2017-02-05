@@ -67,15 +67,18 @@ public class FreeSilverProtocol {
         return String.valueOf(new CaptchaUtil(Globals.get().getOcrUtil()).evalCalcCaptcha(image));
     }
 
-    public GetSilverInfo waitToGetSilver() throws BiliLiveException {
-        CurrentSilverTaskInfo currentInfo = getCurrentFreeSilverStatus();
+    public GetSilverInfo waitToGetSilver() throws BiliLiveException, InterruptedException {
+        return waitToGetSilver(getCurrentFreeSilverStatus());
+    }
 
+    public GetSilverInfo waitToGetSilver(CurrentSilverTaskInfo currentInfo) throws
+            BiliLiveException, InterruptedException {
         if (currentInfo.status() != CurrentSilverTaskInfo.Status.REMAINING)
             throw new BiliLiveException(I18n.format("freeSilver.status", currentInfo.status()));
 
         long time = getWaitTime(currentInfo);
         if (time > 0)
-            MiscUtil.sleep(time);
+            Thread.sleep(time);
 
         while (true) {
             GetSilverInfo info = getNowSilver(
@@ -84,7 +87,7 @@ public class FreeSilverProtocol {
             if (info.status() == GetSilverInfo.Status.SUCCESS) return info;
             if (info.status() == GetSilverInfo.Status.EXPIRE) {
                 if (info.data.surplusMinute < 0) throw new BiliLiveException(I18n.getString("freeSilver.expire"));
-                MiscUtil.sleep((long) (info.data.surplusMinute * 60 * 1000));
+                MiscUtil.sleepMillis((long) (info.data.surplusMinute * 60 * 1000));
             }
         }
     }

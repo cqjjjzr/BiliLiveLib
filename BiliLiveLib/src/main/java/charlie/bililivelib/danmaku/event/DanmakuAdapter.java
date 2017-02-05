@@ -1,48 +1,50 @@
 package charlie.bililivelib.danmaku.event;
 
+import org.jetbrains.annotations.NotNull;
+
 public class DanmakuAdapter implements DanmakuListener {
     @Override
-    public void danmakuEvent(DanmakuEvent event) {
+    public void danmakuEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void watcherCountEvent(DanmakuEvent event) {
+    public void watcherCountEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void errorEvent(DanmakuEvent event) {
+    public void errorEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void startStopEvent(DanmakuEvent event) {
+    public void startStopEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void statusEvent(DanmakuEvent event) {
+    public void statusEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void welcomeVipEvent(DanmakuEvent event) {
+    public void welcomeVipEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void giveGiftEvent(DanmakuEvent event) {
+    public void giveGiftEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void globalGiftEvent(DanmakuEvent event) {
+    public void globalGiftEvent(@NotNull DanmakuEvent event) {
 
     }
 
     @Override
-    public void globalAnnounceEvent(DanmakuEvent event) {
+    public void globalAnnounceEvent(@NotNull DanmakuEvent event) {
 
     }
 }

@@ -4,6 +4,7 @@ import charlie.bililivelib.danmaku.datamodel.StartStopInfo;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -11,6 +12,15 @@ public class StartStopDispatcher extends AbstractJSONDispatcher {
     public static final String[] ACCEPTABLE_COMMANDS = {
             "LIVE", "PREPARING", "ROUND"
     };
+    private static StartStopDispatcher GLOBAL_INSTANCE;
+
+    @NotNull
+    public static StartStopDispatcher getGlobalInstance() {
+        if (GLOBAL_INSTANCE == null) {
+            GLOBAL_INSTANCE = new StartStopDispatcher();
+        }
+        return GLOBAL_INSTANCE;
+    }
 
     @Override
     protected String[] getAcceptableCommands() {

@@ -1,11 +1,11 @@
 package charlie.bililivelib.protocol;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.LogUtil;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.user.Session;
 import charlie.bililivelib.util.I18n;
-import charlie.bililivelib.util.LogUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;

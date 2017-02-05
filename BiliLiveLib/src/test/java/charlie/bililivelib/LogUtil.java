@@ -1,6 +1,5 @@
-package charlie.bililivelib.util;
+package charlie.bililivelib;
 
-import charlie.bililivelib.BiliLiveLib;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +12,7 @@ import java.io.PrintStream;
 import java.util.StringTokenizer;
 
 public class LogUtil {
-    private static final String LINE_BREAKING = System.getProperty("line.separator");
+    private static final String LINE_BREAKING = System.lineSeparator();
 
     private static Logger logger;
 

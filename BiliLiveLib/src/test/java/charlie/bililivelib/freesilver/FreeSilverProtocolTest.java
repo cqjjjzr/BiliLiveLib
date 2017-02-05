@@ -1,7 +1,7 @@
 package charlie.bililivelib.freesilver;
 
+import charlie.bililivelib.LogUtil;
 import charlie.bililivelib.util.I18n;
-import charlie.bililivelib.util.LogUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

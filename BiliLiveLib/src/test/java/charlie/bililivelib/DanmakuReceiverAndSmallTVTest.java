@@ -12,10 +12,10 @@ import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.smalltv.SmallTVReward;
 import charlie.bililivelib.user.Session;
 import charlie.bililivelib.util.I18n;
-import charlie.bililivelib.util.LogUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -72,43 +72,43 @@ public class DanmakuReceiverAndSmallTVTest {
         private SmallTVProtocol smallTVProtocol = new SmallTVProtocol(session);
 
         @Override
-        public void welcomeVipEvent(DanmakuEvent event) {
+        public void welcomeVipEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "Welcome VIP:" + event.getParam());
         }
 
         @Override
-        public void danmakuEvent(DanmakuEvent event) {
+        public void danmakuEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "New Danmaku:" + event.getParam());
         }
 
         @Override
-        public void watcherCountEvent(DanmakuEvent event) {
+        public void watcherCountEvent(@NotNull DanmakuEvent event) {
             // logger.log(Level.INFO, "WatcherCount:" + event.getParam());
         }
 
         @Override
-        public void startStopEvent(DanmakuEvent event) {
+        public void startStopEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "StartStop:" + event.getParam());
         }
 
         @Override
-        public void errorEvent(DanmakuEvent event) {
+        public void errorEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.ERROR, event.getParam());
             ((Throwable) event.getParam()).printStackTrace();
         }
 
         @Override
-        public void statusEvent(DanmakuEvent event) {
+        public void statusEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "STATUS:" + event.getParam());
         }
 
         @Override
-        public void giveGiftEvent(DanmakuEvent event) {
+        public void giveGiftEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "Give gift:" + event.getParam());
         }
 
         @Override
-        public void globalGiftEvent(DanmakuEvent event) {
+        public void globalGiftEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "Global SmallTV:" + event.getParam());
             try {
                 smallTVProtocol.joinLottery((SmallTV) event.getParam());
@@ -119,7 +119,7 @@ public class DanmakuReceiverAndSmallTVTest {
         }
 
         @Override
-        public void globalAnnounceEvent(DanmakuEvent event) {
+        public void globalAnnounceEvent(@NotNull DanmakuEvent event) {
             logger.log(Level.INFO, "GlobalAnnounce:" + event.getParam());
         }
     }

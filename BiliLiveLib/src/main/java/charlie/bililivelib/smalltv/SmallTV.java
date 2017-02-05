@@ -3,8 +3,6 @@ package charlie.bililivelib.smalltv;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class SmallTV {
     @SerializedName("msg")
@@ -18,7 +16,7 @@ public class SmallTV {
     @SerializedName("tv_id")
     private int smallTVID;
 
-    private DataInfo data;
+    /*private DataInfo data;
 
     @Data
     public class DataInfo {
@@ -36,5 +34,5 @@ public class SmallTV {
             @SerializedName("dtime")
             private int countDownSecond;
         }
-    }
+    }*/
 }

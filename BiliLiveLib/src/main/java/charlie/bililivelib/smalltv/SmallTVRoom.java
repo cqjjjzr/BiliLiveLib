@@ -42,6 +42,7 @@ public class SmallTVRoom {
         private List<SmallTVShortInfo> unjoin;
     }
 
+    @Getter
     public static class SmallTVShortInfo {
         /**
          * id : 14610
