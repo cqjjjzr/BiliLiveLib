@@ -48,9 +48,11 @@ class SmallTV(session: Session, receiver: DanmakuReceiver = startupNewReceiver(s
 
         override fun run() {
             try {
-                protocol.joinLottery(smallTV)
-                Thread.sleep(countDownMillis)
-                protocol.getReward(smallTV.smallTVID)
+                protocol.apply {
+                    joinLottery(smallTV)
+                    Thread.sleep(countDownMillis)
+                    getReward(smallTV.smallTVID)
+                }
             } catch(e: InterruptedException) {
                 return
             } catch(e: BiliLiveException) {

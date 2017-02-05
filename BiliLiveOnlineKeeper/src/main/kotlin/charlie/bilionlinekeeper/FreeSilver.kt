@@ -16,9 +16,9 @@ class FreeSilver(session: Session) {
     private val THREAD_NAME = "FreeSilverGetter"
     private val EXCEPTION_WAIT_TIME_MILLIS: Long = 10 * 60 * 1000 // 10 Minutes
 
-    private var protocol: FreeSilverProtocol
-    private var logger: Logger
-    private var thread: Thread
+    private val protocol: FreeSilverProtocol = FreeSilverProtocol(session)
+    private val logger: Logger = LogManager.getLogger(LOGGER_NAME)
+    private var thread: Thread = Thread()
     fun start() {
         thread = Thread(FreeSilverRunnable())
         thread.start()
@@ -28,12 +28,6 @@ class FreeSilver(session: Session) {
     fun stop() {
         thread.interrupt()
         logger.info(I18n.getString("freeSilver.stop"))
-    }
-
-    init {
-        this.protocol = FreeSilverProtocol(session)
-        this.logger = LogManager.getLogger(LOGGER_NAME)
-        this.thread = Thread()
     }
 
     private inner class FreeSilverRunnable : Runnable {
@@ -92,12 +86,17 @@ class FreeSilver(session: Session) {
         }
 
         private fun waitToTomorrow() {
-            val tomorrow = Calendar.getInstance()
             val now = Date()
-            tomorrow.time = now
-            tomorrow.isLenient = true
-            tomorrow[Calendar.DAY_OF_YEAR]++
-            MiscUtil.sleepMillis(tomorrow.timeInMillis - now.time)
+            Calendar.getInstance().apply {
+                time = Date()
+                isLenient = true
+                this[Calendar.DAY_OF_YEAR]++
+                this[Calendar.HOUR_OF_DAY] = 0
+                this[Calendar.MINUTE] = 0
+                this[Calendar.SECOND] = 0
+                this[Calendar.MILLISECOND] = 0
+                MiscUtil.sleepMillis(timeInMillis - now.time)
+            }
         }
 
         private fun initThreadName() {
