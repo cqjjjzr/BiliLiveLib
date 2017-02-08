@@ -6,10 +6,10 @@ import charlie.bililivelib.user.Session
 import charlie.bililivelib.util.MiscUtil
 import charlie.bilionlinekeeper.util.I18n
 import charlie.bilionlinekeeper.util.LogUtil
+import charlie.bilionlinekeeper.util.TimeUtil
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import java.util.*
 
 class FreeSilver(session: Session) {
     private val LOGGER_NAME = "freeSilver"
@@ -19,6 +19,7 @@ class FreeSilver(session: Session) {
     private val protocol: FreeSilverProtocol = FreeSilverProtocol(session)
     private val logger: Logger = LogManager.getLogger(LOGGER_NAME)
     private var thread: Thread = Thread()
+
     fun start() {
         thread = Thread(FreeSilverRunnable())
         thread.start()
@@ -29,6 +30,8 @@ class FreeSilver(session: Session) {
         thread.interrupt()
         logger.info(I18n.getString("freeSilver.stop"))
     }
+
+    fun isStarted(): Boolean = thread.isAlive
 
     private inner class FreeSilverRunnable : Runnable {
         override fun run() {
@@ -86,17 +89,7 @@ class FreeSilver(session: Session) {
         }
 
         private fun waitToTomorrow() {
-            val now = Date()
-            Calendar.getInstance().apply {
-                time = Date()
-                isLenient = true
-                this[Calendar.DAY_OF_YEAR]++
-                this[Calendar.HOUR_OF_DAY] = 0
-                this[Calendar.MINUTE] = 0
-                this[Calendar.SECOND] = 0
-                this[Calendar.MILLISECOND] = 0
-                MiscUtil.sleepMillis(timeInMillis - now.time)
-            }
+            MiscUtil.sleepMillis(TimeUtil.calculateToTomorrowMillis())
         }
 
         private fun initThreadName() {

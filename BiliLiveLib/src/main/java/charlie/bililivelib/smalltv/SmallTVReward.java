@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Data
@@ -78,6 +80,7 @@ public class SmallTVReward {
         @Getter
         private int count;
 
+        @NotNull
         public Kind getKind() {
             return Kind.forID(id);
         }
@@ -98,6 +101,8 @@ public class SmallTVReward {
                 this.id = id;
             }
 
+            @NotNull
+            @Contract(pure = true)
             public static Kind forID(int id) {
                 for (Kind reward : Kind.values()) {
                     if (reward.getId() == id) return reward;

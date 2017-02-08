@@ -11,7 +11,6 @@ import charlie.bililivelib.smalltv.SmallTV;
 import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.smalltv.SmallTVReward;
 import charlie.bililivelib.user.Session;
-import charlie.bililivelib.util.I18n;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,6 @@ public class DanmakuReceiverAndSmallTVTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        I18n.init();
         LogUtil.init();
 
         session = initSession();

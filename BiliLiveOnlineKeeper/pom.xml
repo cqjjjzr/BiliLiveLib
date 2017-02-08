@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>charlie</groupId>
+    <groupId>com.github.bililivelib</groupId>
     <artifactId>charlie.bilionlinekeeper</artifactId>
     <version>rv1-debug</version>
     <packaging>jar</packaging>
@@ -36,7 +36,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>charlie</groupId>
+            <groupId>com.github.bililivelib</groupId>
             <artifactId>charlie.bililivelib</artifactId>
             <version>rv1-debug</version>
         </dependency>
@@ -45,6 +45,19 @@
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>
+                    src/main/resources
+                </directory>
+            </resource>
+            <resource>
+                <directory>../BiliLiveLib/src/main/resources</directory>
+                <excludes>
+                    <exclude>log4j2.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
         <plugins>
             <plugin>

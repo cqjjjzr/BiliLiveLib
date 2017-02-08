@@ -9,6 +9,15 @@
         <Logger name="freeSilver" level="INFO">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="smallTV" level="INFO">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="onlineExp" level="INFO">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="signIn" level="INFO">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Root/>
     </Loggers>
 </Configuration>

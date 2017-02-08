@@ -1,10 +1,8 @@
 package charlie.bililivelib.user;
 
-import charlie.bililivelib.util.I18n;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -14,11 +12,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 public class SessionTest {
-    @BeforeClass
-    public static void setUp() throws Exception {
-        I18n.init();
-    }
-
     @Ignore
     public void showIntrospection() throws Exception {
         System.out.println(Arrays.toString(Introspector.getBeanInfo(

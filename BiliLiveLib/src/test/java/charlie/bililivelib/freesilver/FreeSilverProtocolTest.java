@@ -1,7 +1,6 @@
 package charlie.bililivelib.freesilver;
 
 import charlie.bililivelib.LogUtil;
-import charlie.bililivelib.util.I18n;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -11,7 +10,6 @@ import static org.junit.Assert.fail;
 public class FreeSilverProtocolTest {
     @BeforeClass
     public static void setUp() throws Exception {
-        I18n.init();
         LogUtil.init();
     }
 

@@ -223,6 +223,10 @@ public class DanmakuReceiver implements Runnable {
         listeners.remove(listener);
     }
 
+    public boolean hasDanmakuListener(DanmakuListener listener) {
+        return listeners.contains(listener);
+    }
+
     private void fireDanmakuEvent(Object param, DanmakuEvent.Kind kind) {
         DanmakuEvent event = new DanmakuEvent(this, param, kind);
         switch (kind) {

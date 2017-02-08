@@ -13,7 +13,11 @@ public class I18n {
     public static final String BUNDLE_NAME = "BiliLiveLib";
     private static Map<String, String> strings;
 
-    public static void init() {
+    static {
+        init();
+    }
+
+    private static void init() {
         strings = new HashMap<>();
         fillResourceBundle();
     }

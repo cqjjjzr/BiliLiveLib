@@ -4,7 +4,6 @@ import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.LogUtil;
 import charlie.bililivelib.streamer.event.DownloadEvent;
 import charlie.bililivelib.streamer.event.DownloadListener;
-import charlie.bililivelib.util.I18n;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +18,6 @@ public class DirectStreamDownloaderTest {
 
     @BeforeClass
     public static void init() {
-        I18n.init();
         LogUtil.init();
     }
 

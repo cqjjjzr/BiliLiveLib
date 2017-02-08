@@ -5,7 +5,6 @@ import charlie.bililivelib.LogUtil;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.user.Session;
-import charlie.bililivelib.util.I18n;
 import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -30,7 +29,6 @@ public class BiliLiveProtocolTest {
 
     @BeforeClass
     public static void init() {
-        I18n.init();
         LogUtil.init();
         session = new Session(Globals.get().getConnectionPool());
         CookieStore tempStore = new BasicCookieStore();
