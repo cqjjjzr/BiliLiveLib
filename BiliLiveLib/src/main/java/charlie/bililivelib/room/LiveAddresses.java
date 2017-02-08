@@ -1,9 +1,9 @@
 package charlie.bililivelib.room;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.datamodel.ErrorResponseJson;
-import charlie.bililivelib.util.I18n;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.w3c.dom.Document;
@@ -16,7 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static charlie.bililivelib.util.I18n.getString;
+import static charlie.bililivelib.I18n.getString;
 
 @Data
 @AllArgsConstructor

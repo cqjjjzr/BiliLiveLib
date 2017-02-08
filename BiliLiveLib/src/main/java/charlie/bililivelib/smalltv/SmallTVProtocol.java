@@ -1,6 +1,7 @@
 package charlie.bililivelib.smalltv;
 
 import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.user.Session;
@@ -8,6 +9,15 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * 用于进行小电视抽奖的协议类。
+ *
+ * @author Charlie Jiang
+ * @see SmallTVReward
+ * @see SmallTV
+ * @see SmallTVRoom
+ * @since rv1
+ */
 public class SmallTVProtocol {
     public static final int SUCCESS = 0;
     public static final int STATUS_NO_REWARD = 1;
@@ -24,13 +34,15 @@ public class SmallTVProtocol {
     }
 
     /**
-     * Returns the small TV that current drawing.
+     * 返回给定房间号的小电视情况。
      * <p>
-     *     WARNING: DON'T CALL THIS METHOD TO LISTEN SMALL TVs.
-     *     USE DanmakuReceiver and GlobalGiftDispatcher to listen small TV lottery via danmaku server.
+     *     警告：不要使用这个方法来监听小电视情况。效率极低。
+     *     使用 {@link charlie.bililivelib.danmaku.DanmakuReceiver} 和
+     *     {@link charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher} 监听全局小电视事件。
      * </p>
-     * @param roomID Drawing roomID
-     * @return The small TV that current drawing. Null if no small TVs is drawing.
+     * @param roomID 给定的房间号
+     * @return 小电视情况，若该房间无小电视抽奖则返回Null
+     * @throws NetworkException 发生网络问题时抛出
      */
     @Nullable
     public SmallTVRoom getSmallTVRoom(int roomID) throws BiliLiveException {
@@ -42,6 +54,12 @@ public class SmallTVProtocol {
         return room;
     }
 
+    /**
+     * 加入给定小电视抽奖。
+     * @param smallTV 给定小电视
+     * @throws BiliLiveException 在加入失败时抛出
+     * @throws NetworkException 发生网络问题时抛出
+     */
     public void joinLottery(SmallTV smallTV) throws BiliLiveException {
         JsonObject rootObject = httpHelper.getBiliLiveJSON(
                 generateJoinSmallTVRequest(smallTV.getRealRoomID(), smallTV.getSmallTVID()),
@@ -81,6 +99,12 @@ public class SmallTVProtocol {
         return GET_CURRENT_STV_GET + roomID;
     }
 
+    /**
+     * 获取给定小电视获取到的奖励。
+     * @param smallTVID 给定小电视的ID
+     * @return 奖励数据结构
+     * @throws NetworkException 发生网络问题时抛出
+     */
     public SmallTVReward getReward(int smallTVID) throws BiliLiveException {
         if (smallTVID < 1) throw new IllegalArgumentException("SmallTVID < 1");
 

@@ -7,6 +7,12 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * 保存一个房间的小电视状态。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Data
 public class SmallTVRoom {
     /**
@@ -30,7 +36,7 @@ public class SmallTVRoom {
     }
 
     private static class DataBean {
-        /**
+        /*
          * lastid : 0
          * join : [{"id":14610,"dtime":85}]
          * unjoin : []
@@ -42,6 +48,11 @@ public class SmallTVRoom {
         private List<SmallTVShortInfo> unjoin;
     }
 
+    /**
+     * 用于保存一个小电视的粗略数据。
+     * @author Charlie Jiang
+     * @since rv1
+     */
     @Getter
     public static class SmallTVShortInfo {
         /**
@@ -52,6 +63,6 @@ public class SmallTVRoom {
         @SerializedName("id")
         private int smallTVID;
         @SerializedName("dtime")
-        private int countDown;
+        private int countDownSecond;
     }
 }

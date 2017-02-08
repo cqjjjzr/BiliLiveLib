@@ -18,7 +18,8 @@ class SignIn(session: Session) : Runnable {
         startupThread()
         while (!Thread.currentThread().isInterrupted) {
             try {
-                logSign(protocol.signIn())
+                if (!protocol.currentSignInfo.isSignedIn)
+                    logSign(protocol.signIn())
             } catch(e: BiliLiveException) {
                 logSingleException(e)
             }

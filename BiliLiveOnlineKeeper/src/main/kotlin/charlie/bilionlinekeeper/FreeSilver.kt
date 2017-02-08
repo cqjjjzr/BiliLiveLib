@@ -2,8 +2,8 @@ package charlie.bilionlinekeeper
 
 import charlie.bililivelib.exceptions.BiliLiveException
 import charlie.bililivelib.freesilver.FreeSilverProtocol
+import charlie.bililivelib.internalutil.MiscUtil
 import charlie.bililivelib.user.Session
-import charlie.bililivelib.util.MiscUtil
 import charlie.bilionlinekeeper.util.I18n
 import charlie.bilionlinekeeper.util.LogUtil
 import charlie.bilionlinekeeper.util.TimeUtil

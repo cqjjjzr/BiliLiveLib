@@ -1,6 +1,7 @@
 package charlie.bililivelib.danmaku;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
 import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
 import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
@@ -9,7 +10,6 @@ import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
-import charlie.bililivelib.util.I18n;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static charlie.bililivelib.util.ByteArrayOperation.byteArrayToInt;
-import static charlie.bililivelib.util.ByteArrayOperation.byteArrayToShort;
+import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToInt;
+import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToShort;
 
 public class DanmakuReceiver implements Runnable {
     public static final Charset UTF8 = Charset.forName("UTF-8");

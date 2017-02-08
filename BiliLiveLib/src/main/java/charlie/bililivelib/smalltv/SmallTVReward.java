@@ -1,6 +1,6 @@
 package charlie.bililivelib.smalltv;
 
-import charlie.bililivelib.util.I18n;
+import charlie.bililivelib.I18n;
 import com.google.gson.annotations.SerializedName;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -9,11 +9,17 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * 储存小电视抽奖结果的数据结构。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Data
 public class SmallTVReward {
     private static final int STATUS_MISS = 1;
 
-    /**
+    /*
      * code : 0
      * msg : OK
      * data : {"fname":"奶酪酪酪酪","sname":"南傾挽风","reward":{"id":7,"num":2},"win":0,"status":0}
@@ -51,7 +57,7 @@ public class SmallTVReward {
     }
 
     private static class DataBean {
-        /**
+        /*
          * fname : 奶酪酪酪酪
          * sname : 南傾挽风
          * reward : {"id":7,"num":2}
@@ -68,8 +74,11 @@ public class SmallTVReward {
         private int status;
     }
 
+    /**
+     * 储存一个小电视抽奖奖励。
+     */
     public static class Reward {
-        /**
+        /*
          * id : 7
          * num : 2
          */

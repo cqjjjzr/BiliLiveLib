@@ -6,18 +6,18 @@ import org.jetbrains.annotations.Nls;
 
 import java.util.EventObject;
 
+/**
+ * 描述下载事件。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Getter
 @ToString
 public class DownloadEvent extends EventObject {
     private String message;
     private Kind kind;
 
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if source is null.
-     */
     public DownloadEvent(Object source) {
         super(source);
         message = "";

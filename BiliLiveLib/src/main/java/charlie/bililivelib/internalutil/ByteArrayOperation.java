@@ -1,4 +1,4 @@
-package charlie.bililivelib.util;
+package charlie.bililivelib.internalutil;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

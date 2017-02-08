@@ -1,14 +1,14 @@
 package charlie.bililivelib.freesilver;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
 import charlie.bililivelib.exceptions.WrongCaptchaException;
+import charlie.bililivelib.internalutil.CaptchaUtil;
+import charlie.bililivelib.internalutil.MiscUtil;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.user.Session;
-import charlie.bililivelib.util.CaptchaUtil;
-import charlie.bililivelib.util.I18n;
-import charlie.bililivelib.util.MiscUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package charlie.bililivelib.util;
+package charlie.bililivelib.internalutil;
 
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.user.Session;

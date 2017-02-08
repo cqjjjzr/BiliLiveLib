@@ -28,7 +28,7 @@ class SmallTV(session: Session,
                 .filter { it.smallTVID == smallTV.smallTVID }
                 .apply {
                     if (isEmpty()) return
-                    Thread(SingleSmallTV(first().countDown, smallTV, logger)).start()
+                    Thread(SingleSmallTV(first().countDownSecond, smallTV, logger)).start()
                 }
         //println(event.param.toString())
     }

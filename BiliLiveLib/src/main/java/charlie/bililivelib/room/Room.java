@@ -1,12 +1,12 @@
 package charlie.bililivelib.room;
 
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.datamodel.UserGuardLevel;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.room.datamodel.RoomInfoResponseJson;
 import charlie.bililivelib.user.Session;
-import charlie.bililivelib.util.I18n;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,7 +22,7 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static charlie.bililivelib.util.I18n.getString;
+import static charlie.bililivelib.I18n.getString;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 

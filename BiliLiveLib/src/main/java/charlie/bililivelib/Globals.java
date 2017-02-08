@@ -1,8 +1,7 @@
 package charlie.bililivelib;
 
+import charlie.bililivelib.internalutil.OCRUtil;
 import charlie.bililivelib.net.BilibiliTrustStrategy;
-import charlie.bililivelib.net.HttpHelper;
-import charlie.bililivelib.util.OCRUtil;
 import com.gargoylesoftware.htmlunit.Cache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,10 +17,17 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 本单例类定义了一组在整个应用程序中的全局变量，这些变量仅用于Library内部使用且随时可能修改，请勿随意访问该类中的对象。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class Globals {
     private static final String BILI_PASSPORT_HOST_ROOT = "passport.bilibili.com";
     private static final String BILI_LIVE_HOST_ROOT = "live.bilibili.com";
-    private static final int CONNECTION_ALIVE_TIME_SECOND = 10;
+    @Getter
+    private static int CONNECTION_ALIVE_TIME_SECOND = 10;
     private static Globals instance;
     @Getter
     private HttpHost biliLiveRoot;
@@ -30,7 +36,6 @@ public class Globals {
     private ThreadLocal<Gson> gson;
     private ThreadLocal<Cache> htmlUnitCache;
     private HttpClientConnectionManager connectionPool;
-    private HttpHelper noSessionHttpHelper;
     @Getter
     private SSLContext bilibiliSSLContext;
     private OCRUtil ocrUtil;
@@ -42,8 +47,8 @@ public class Globals {
         }
         return instance;
     }
-    
-    public void init() {
+
+    private void init() {
         biliLiveRoot = new HttpHost(BILI_LIVE_HOST_ROOT);
         //Visit bilibili passport via https. 443 is the https port.
         biliPassportHttpsRoot = new HttpHost(BILI_PASSPORT_HOST_ROOT, 443, "https");
@@ -70,9 +75,18 @@ public class Globals {
 
     public HttpClientConnectionManager getConnectionPool() {
         if (connectionPool == null) {
-            connectionPool = new PoolingHttpClientConnectionManager(CONNECTION_ALIVE_TIME_SECOND, TimeUnit.SECONDS);
+            reInitializeConnectionPool();
         }
         return connectionPool;
+    }
+
+    public void reInitializeConnectionPool() {
+        connectionPool = new PoolingHttpClientConnectionManager(CONNECTION_ALIVE_TIME_SECOND, TimeUnit.SECONDS);
+    }
+
+    public void setConnectionAliveTimeSecond(int connectionAliveTimeSecond) {
+        CONNECTION_ALIVE_TIME_SECOND = connectionAliveTimeSecond;
+        reInitializeConnectionPool();
     }
 
     public OCRUtil getOcrUtil() {
@@ -80,13 +94,5 @@ public class Globals {
             ocrUtil = new OCRUtil();
         }
         return ocrUtil;
-    }
-
-    public HttpHelper getNoSessionHttpHelper() {
-        if (noSessionHttpHelper == null) {
-            noSessionHttpHelper = new HttpHelper();
-            noSessionHttpHelper.init();
-        }
-        return noSessionHttpHelper;
     }
 }

@@ -34,7 +34,7 @@ public class TestSessionHelper {
 
         SessionLoginHelper helper = new SessionLoginHelper(email, password,
                 SessionLoginHelper.DEFAULT_LOGIN_TIMEOUT_MILLIS,
-                true);
+                true, BiliLiveLib.DEFAULT_USER_AGENT);
         JOptionPane.showMessageDialog(null, "Captcha", "Captcha",
                 JOptionPane.PLAIN_MESSAGE, new ImageIcon(helper.getCaptcha()));
 

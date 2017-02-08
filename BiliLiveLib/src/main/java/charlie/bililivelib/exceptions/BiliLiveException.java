@@ -1,6 +1,6 @@
 package charlie.bililivelib.exceptions;
 
-import charlie.bililivelib.util.I18n;
+import charlie.bililivelib.I18n;
 import org.jetbrains.annotations.Nls;
 
 import java.util.Arrays;

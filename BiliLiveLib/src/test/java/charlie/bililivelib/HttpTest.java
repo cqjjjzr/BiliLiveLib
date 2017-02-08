@@ -16,7 +16,7 @@ public class HttpTest {
     @Test
     public void getCaptcha() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
-        httpHelper.init();
+        httpHelper.init(BiliLiveLib.DEFAULT_USER_AGENT);
         HttpResponse response = httpHelper.createPostResponse(
                 Globals.get().getBiliPassportHttpsRoot(),
                 "/login/dologin",

@@ -3,6 +3,12 @@ package charlie.bililivelib.smalltv;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
+/**
+ * 储存从弹幕服务器发回的小电视数据结构。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Data
 public class SmallTV {
     @SerializedName("msg")
@@ -15,24 +21,4 @@ public class SmallTV {
     private int realRoomID;
     @SerializedName("tv_id")
     private int smallTVID;
-
-    /*private DataInfo data;
-
-    @Data
-    public class DataInfo {
-        @SerializedName("lastid")
-        private int lastID;
-
-        @SerializedName("join")
-        private List<SmallTVJoinInfo> joinedInfo = null;
-        @SerializedName("unjoin")
-        private List<SmallTVJoinInfo> notJoinedInfo = null;
-
-        @Data
-        public class SmallTVJoinInfo {
-            private int id;
-            @SerializedName("dtime")
-            private int countDownSecond;
-        }
-    }*/
 }

@@ -3,6 +3,7 @@ package charlie.bililivelib.user;
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.WrongCaptchaException;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
@@ -27,6 +28,15 @@ import java.util.Set;
 
 import static charlie.bililivelib.user.SessionLoginHelper.LoginStatus.*;
 
+/**
+ * 用于登录会话的工具类。注意，由于无法直接访问Bilibili直播登录API，因此本类直接使用了HtmlUnit进行模拟登录。<br />
+ * 因此，该类的执行效率极低，请勿频繁使用此类。<br />
+ * <red>约定：本类所有public方法在传入Null参数时抛出NullPointerException。</red>
+ *
+ * @author Charlie Jiang
+ * @see Session
+ * @since rv1
+ */
 @Getter
 public class SessionLoginHelper {
     public static final int DEFAULT_LOGIN_TIMEOUT_MILLIS = 2000;
@@ -55,24 +65,59 @@ public class SessionLoginHelper {
 
     private LoginStatus status = NOT_COMPLETED;
 
+    /**
+     * 对于给定登录凭据，使用默认User-Agent和默认登录超时开始登录会话，且保持登录。
+     * @param email E-Mail/ID/手机号
+     * @param password 明文密码
+     * @throws NetworkException 在出现网络问题时抛出
+     * @throws IllegalArgumentException 在参数无效时抛出
+     * @throws NullPointerException 在有参数为Null时抛出
+     */
     public SessionLoginHelper(@NotNull String email, @NotNull String password) throws BiliLiveException {
-        this(email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN);
+        this(email, password, BiliLiveLib.DEFAULT_USER_AGENT);
     }
 
+    /**
+     * 对于给定登录凭据，使用给定User-Agent和默认登录超时开始登录会话，且保持登录。
+     *
+     * @param email     E-Mail/ID/手机号
+     * @param password  明文密码
+     * @param userAgent 给定User-Agent
+     * @throws NetworkException         在出现网络问题时抛出
+     * @throws IllegalArgumentException 在参数无效时抛出
+     * @throws NullPointerException     在有参数为Null时抛出
+     */
+    public SessionLoginHelper(@NotNull String email, @NotNull String password, @NotNull String userAgent)
+            throws BiliLiveException {
+        this(email, password, DEFAULT_LOGIN_TIMEOUT_MILLIS, DEFAULT_KEEP_LOGGING_IN, userAgent);
+    }
+
+    /**
+     * 对于给定登录凭据，使用给定User-Agent和给定登录超时开始登录会话，且指定是否保持登录。
+     * @param email E-Mail/ID/手机号
+     * @param password 明文密码
+     * @param userAgent User-Agent
+     * @param keepLoggingIn 指定是否保持登录
+     * @param loginTimeoutMillis 登录执行超时
+     * @throws NetworkException 在出现网络问题时抛出
+     * @throws IllegalArgumentException 在参数无效时抛出
+     * @throws NullPointerException 在有参数为Null时抛出
+     */
     public SessionLoginHelper(@NotNull String email, @NotNull String password,
-                              long loginTimeoutMillis, boolean keepLoggingIn) throws BiliLiveException {
+                              long loginTimeoutMillis, boolean keepLoggingIn, @NotNull String userAgent)
+            throws BiliLiveException {
         this.email = email;
         this.password = password;
-        checkArguments();
         this.loginTimeoutMillis = loginTimeoutMillis;
         this.keepLoggingIn = keepLoggingIn;
+        checkArguments(userAgent);
 
         webClient = new WebClient(BrowserVersion.BEST_SUPPORTED/*, "127.0.0.1", 8888*/); // Commented code is for Fiddler Debugging.
-        initWebClient();
+        initWebClient(userAgent);
         startLogin();
     }
 
-    private void initWebClient() {
+    private void initWebClient(String userAgent) {
         /*webClient.getOptions().setSSLTrustStore(SessionLoginHelper.class.getResource("/bili.truststore"),
                 TRUST_STORE_PASSWORD,
                 "jks");*/
@@ -84,15 +129,17 @@ public class SessionLoginHelper {
         // - Re-synchronized call to https://passport.bilibili.com/ajax/miniLogin/login"
 
         webClient.setCache(Globals.get().getHtmlUnitCache());
-        webClient.addRequestHeader("User-Agent", BiliLiveLib.USER_AGENT);
+        webClient.addRequestHeader("User-Agent", userAgent);
     }
 
-    private void checkArguments() {
-        if (email == null || password == null)
+    private void checkArguments(String userAgent) {
+        if (email == null || password == null || userAgent == null)
             throw new NullPointerException();
         if (email.isEmpty() || password.isEmpty())
             throw new IllegalArgumentException("Email=" + Objects.toString(email, "null") + "\n" +
                     "Password=" + Objects.toString(password, "null"));
+        if (loginTimeoutMillis < 1)
+            throw new IllegalArgumentException("loginTimeoutMillis < 1");
     }
 
     private void avoidUselessErrorMessages() {
@@ -121,7 +168,7 @@ public class SessionLoginHelper {
                 }
             });
         } catch (IOException ex) {
-            throw new BiliLiveException("IO Exception", ex);
+            throw new NetworkException("IO Exception", ex);
         }
     }
 
@@ -144,15 +191,27 @@ public class SessionLoginHelper {
         status = LoginStatus.forCode(errorCode);
     }
 
+    /**
+     * 刷新并获取验证码。
+     * @return 验证码
+     * @throws NetworkException 在发生网络问题时抛出
+     */
     public Image getCaptcha() throws BiliLiveException {
         try {
             HtmlImage image = (HtmlImage) miniLoginPage.getByXPath("//img[@class='captcha-img']").get(0);
+            image.click(); // Click to refresh.
             return image.getImageReader().read(0);
         } catch (IOException ex) {
-            throw new BiliLiveException("IO Exception", ex);
+            throw new NetworkException("IO Exception", ex);
         }
     }
 
+    /**
+     * 使用给定验证码进行登录。登录结果保存在本类中。
+     * @param captcha 验证码
+     * @throws NetworkException 在发生网络问题时抛出
+     * @throws WrongCaptchaException 在验证码错误时抛出
+     */
     public void loginWithCaptcha(String captcha) throws BiliLiveException {
         try {
             miniLoginPage.getElementById("login-username").setAttribute("value", email);
@@ -168,10 +227,16 @@ public class SessionLoginHelper {
             // webClient.waitForBackgroundJavaScript(loginTimeoutMillis);
             // Needn't this if we use NicelyResynchronizingAjaxController. See SessionLoginHelper().
         } catch (IOException ex) {
-            throw new BiliLiveException("IO Exception", ex);
+            throw new NetworkException("IO Exception", ex);
         }
     }
 
+    /**
+     * 将登录结果保存到给定会话对象中，并激活给定会话对象。
+     * @param session 会话对象
+     * @throws IllegalStateException 登录未成功时抛出
+     * @throws NetworkException 在发生网络问题时抛出
+     */
     public void fillSession(Session session) throws BiliLiveException {
         try {
             if (status != SUCCESS) throw new IllegalStateException("Bad status: " + status);
@@ -186,7 +251,7 @@ public class SessionLoginHelper {
 
             if (getStatus() == SUCCESS) session.activate();
         } catch (IOException ex) {
-            throw new BiliLiveException("IO Exception", ex);
+            throw new NetworkException("IO Exception", ex);
         }
     }
 

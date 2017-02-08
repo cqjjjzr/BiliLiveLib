@@ -1,4 +1,4 @@
-package charlie.bililivelib.util;
+package charlie.bililivelib.internalutil;
 
 public class MiscUtil {
     public static void sleepMillis(long millis) {

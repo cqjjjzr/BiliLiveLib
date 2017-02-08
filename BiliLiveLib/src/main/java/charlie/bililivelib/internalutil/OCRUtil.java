@@ -1,4 +1,4 @@
-package charlie.bililivelib.util;
+package charlie.bililivelib.internalutil;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;

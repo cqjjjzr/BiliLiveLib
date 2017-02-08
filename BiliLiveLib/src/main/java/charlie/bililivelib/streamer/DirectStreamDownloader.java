@@ -1,11 +1,10 @@
 package charlie.bililivelib.streamer;
 
-import charlie.bililivelib.Globals;
+import charlie.bililivelib.BiliLiveLib;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.net.HttpHelper;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.streamer.event.DownloadEvent;
-import charlie.bililivelib.streamer.event.DownloadListener;
-import charlie.bililivelib.util.I18n;
 import org.apache.http.HttpResponse;
 
 import java.io.File;
@@ -14,35 +13,53 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.LinkedList;
-import java.util.List;
 
+/**
+ * 通过直接下载Http流进行保存的下载器，未压缩，但处理最快。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class DirectStreamDownloader extends AbstractDownloader implements Runnable {
     private static final int _1_KB = 1024;
 
-    private List<DownloadListener> listeners = new LinkedList<>();
     private InputStream stream;
 
     private Thread thread;
+    private String userAgent;
 
     public DirectStreamDownloader(URL liveURL, Room room, File path) {
+        this(liveURL, room, path, BiliLiveLib.DEFAULT_USER_AGENT);
+    }
+
+    public DirectStreamDownloader(URL liveURL, Room room, File path, String userAgent) {
         this.liveURL = liveURL;
         this.room = room;
         this.path = path;
+        this.userAgent = userAgent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void start() {
         if (status != Status.STOPPED && status != Status.ERROR) return;
         thread = new Thread(this);
         thread.start();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void tryStop() {
         status = Status.STOPPING;
 
         fireDownloadEvent(I18n.getString("msg.try_stopping"), DownloadEvent.Kind.STOPPED);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("deprecation")
     public void forceStop() {
         thread.stop();
@@ -55,7 +72,7 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
         try {
             status = Status.STARTING;
             fireDownloadEvent(I18n.getString("msg.stream_starting"), DownloadEvent.Kind.STARTING);
-            HttpResponse response = Globals.get().getNoSessionHttpHelper()
+            HttpResponse response = new HttpHelper().init(userAgent)
                     .createGetResponse(liveURL);
 
             if (!path.exists()) path.createNewFile();
@@ -80,23 +97,7 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
                 status = Status.STOPPED;
             }
         } catch (Exception e) {
-            reportError(e);
-        }
-    }
-
-    public void addDownloadListener(DownloadListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeDownloadListener(DownloadListener listener) {
-        listeners.remove(listener);
-    }
-    
-    public void fireDownloadEvent(String message, DownloadEvent.Kind kind) {
-        DownloadEvent event = new DownloadEvent(this, message, kind);
-        for (DownloadListener listener :
-                listeners) {
-            listener.downloadEvent(event);
+            reportException(e);
         }
     }
 }

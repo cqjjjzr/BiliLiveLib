@@ -16,7 +16,8 @@ import java.lang.ref.WeakReference;
  * are directly useful for the user. To easily have a testable state, these calls
  * are performed synchronously.
  * <p>
- * <red>Why we add this in the project? Because the NicelyResynchronizingAjaxController will write fucking logs!</red>
+ * <red>如果你仔细比对该类和NicelyResynchronizingAjaxController，你就会发现该类和NicelyResynchronizingAjaxController唯一的不同就是
+ * 本类不会输出日志。这正是我们希望解决的。</red>
  *
  * @author Marc Guillemot
  */

@@ -1,9 +1,9 @@
 package charlie.bililivelib.net;
 
-import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
-import charlie.bililivelib.util.I18n;
+import charlie.bililivelib.exceptions.NetworkException;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -39,12 +39,12 @@ public class HttpHelper {
         return str;
     }
 
-    public void init() {
+    public HttpHelper init(String userAgent) {
         HttpClientBuilder builder = HttpClientBuilder.create()
-                .setUserAgent(BiliLiveLib.USER_AGENT)
-                .setProxy(new HttpHost("127.0.0.1", 8888))
+                .setUserAgent(userAgent)
                 .setSSLContext(bilibiliSSLContext);
         init(builder.build());
+        return this;
     }
 
     public void init(HttpClient httpClient) {
@@ -88,7 +88,7 @@ public class HttpHelper {
             HttpResponse response = this.createGetResponse(httpHost, url);
             return responseToObject(response, clazz, exceptionKey);
         } catch (IOException e) {
-            throw new BiliLiveException(I18n.getString(exceptionKey), e);
+            throw new NetworkException(I18n.getString(exceptionKey), e);
         }
     }
 
@@ -102,7 +102,7 @@ public class HttpHelper {
             HttpResponse response = this.createPostResponse(httpHost, url, arguments);
             return responseToObject(response, clazz, exceptionKey);
         } catch (IOException e) {
-            throw new BiliLiveException(I18n.getString(exceptionKey), e);
+            throw new NetworkException(I18n.getString(exceptionKey), e);
         }
     }
 

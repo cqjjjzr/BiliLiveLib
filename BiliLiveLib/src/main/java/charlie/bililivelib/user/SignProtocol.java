@@ -1,14 +1,22 @@
 package charlie.bililivelib.user;
 
 import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
 import charlie.bililivelib.net.HttpHelper;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * 用于用户签到的协议类。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class SignProtocol {
     private static final String EXCEPTION_SIGN = "exception.sign";
     private static final String SIGN_INFO_G = "/sign/GetSignInfo";
@@ -16,16 +24,28 @@ public class SignProtocol {
     private static final int STATUS_NOT_LOGGED_IN = -105;
     private HttpHelper httpHelper;
 
-    public SignProtocol(Session session) {
+    public SignProtocol(@NotNull Session session) {
         httpHelper = session.getHttpHelper();
     }
 
+    /**
+     * 签到。
+     * @return 签到信息，指示签到是否成功，以及签到获取的奖励
+     * @throws NetworkException 在发生网络问题时抛出
+     * @throws NotLoggedInException 在未登录时抛出
+     */
     public DoSignInfo signIn() throws BiliLiveException {
         DoSignInfo doSignInfo = httpHelper.getBiliLiveJSON(DO_SIGN_IN_G, DoSignInfo.class, EXCEPTION_SIGN);
         if (doSignInfo.getCode() == -101) throw new NotLoggedInException();
         return doSignInfo;
     }
 
+    /**
+     * 获取当前签到信息。
+     * @return 签到信息
+     * @throws NetworkException 在发生网络问题时抛出
+     * @throws NotLoggedInException 在未登录时抛出
+     */
     public SignInfo getCurrentSignInfo() throws BiliLiveException {
         SignInfo info = httpHelper.getBiliLiveJSON(SIGN_INFO_G, SignInfo.class, EXCEPTION_SIGN);
         if (info.getCode() == STATUS_NOT_LOGGED_IN) throw new NotLoggedInException();
