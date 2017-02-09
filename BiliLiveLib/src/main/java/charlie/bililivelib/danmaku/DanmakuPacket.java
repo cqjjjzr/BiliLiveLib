@@ -30,7 +30,7 @@ import static charlie.bililivelib.danmaku.DanmakuReceiver.UTF8;
 @Data
 @AllArgsConstructor
 public final class DanmakuPacket {
-    private static final short DEFAULT_MAGIC = 0x0F;
+    private static final short DEFAULT_MAGIC = 0x10;
     private static final short DEFAULT_PROTOCOL_VERSION = 1;
     private static final int DEFAULT_PARAM = 1;
     private static final int DEFAULT_LENGTH = -1;

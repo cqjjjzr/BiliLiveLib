@@ -39,10 +39,10 @@ public final class DanmakuReceivePacket {
 
         operationID -= 1; // I don't know what this means...
 
-        DanmakuReceivePacket.Operation operation = DanmakuReceivePacket.Operation.forID(operationID);
+        operation = DanmakuReceivePacket.Operation.forID(operationID);
 
-        byte[] bodyBuffer = new byte[bodyLength];
-        readArray(inputStream, bodyBuffer, bodyLength);
+        body = new byte[bodyLength];
+        readArray(inputStream, body, bodyLength);
     }
 
     private int readArray(InputStream stream, byte[] buffer, int length) throws IOException {

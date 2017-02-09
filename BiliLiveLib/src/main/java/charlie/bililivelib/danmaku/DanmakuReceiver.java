@@ -143,7 +143,7 @@ public class DanmakuReceiver implements Runnable {
 
             while (status == Status.CONNECTED) {
                 DanmakuReceivePacket packet = new DanmakuReceivePacket(inputStream);
-                if (packet.getBody() == null) return;
+                if (packet.getBody() == null) continue;
 
                 dispatchPacket(packet.getOperation(), packet.getBody());
             }
