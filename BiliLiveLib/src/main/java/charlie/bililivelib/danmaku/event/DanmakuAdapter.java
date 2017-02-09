@@ -2,6 +2,13 @@ package charlie.bililivelib.danmaku.event;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 对{@link DanmakuListener}中所有方法给出的空实现，用于方便监听特定事件。
+ *
+ * @author Charlie Jiang
+ * @see DanmakuListener
+ * @since rv1
+ */
 public class DanmakuAdapter implements DanmakuListener {
     @Override
     public void danmakuEvent(@NotNull DanmakuEvent event) {

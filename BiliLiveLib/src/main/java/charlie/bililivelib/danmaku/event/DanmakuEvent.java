@@ -4,6 +4,13 @@ import lombok.Getter;
 
 import java.util.EventObject;
 
+/**
+ * 封装一个弹幕服务器事件。
+ *
+ * @author Charlie Jiang
+ * @see DanmakuListener
+ * @since rv1
+ */
 @Getter
 public class DanmakuEvent extends EventObject {
     private Kind kind;

@@ -1,9 +1,8 @@
 package charlie.bililivelib.danmaku;
 
-import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class DanmakuPacketTest {
     @Test

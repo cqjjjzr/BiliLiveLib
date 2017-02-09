@@ -1,8 +1,7 @@
 package charlie.bililivelib;
 
 import charlie.bililivelib.danmaku.DanmakuReceiver;
-import charlie.bililivelib.danmaku.dispatch.GlobalAnnounceDispatcher;
-import charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher;
+import charlie.bililivelib.danmaku.dispatch.*;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.exceptions.BiliLiveException;
@@ -52,10 +51,10 @@ public class DanmakuReceiverAndSmallTVTest {
         Room room = new Room(SIXTEEN_ROOMID, session);
         DanmakuReceiver receiver = new DanmakuReceiver(room,
                 DanmakuReceiver.generateRandomUID(), DanmakuReceiver.CMT_SERVERS[1]);
-        /*receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
         receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
         receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());*/
+        receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalAnnounceDispatcher());
         receiver.addDanmakuListener(new TestListener());

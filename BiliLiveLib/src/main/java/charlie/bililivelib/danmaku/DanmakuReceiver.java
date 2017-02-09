@@ -3,12 +3,9 @@ package charlie.bililivelib.danmaku;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
 import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
-import charlie.bililivelib.danmaku.dispatch.DanmakuPacket;
-import charlie.bililivelib.danmaku.dispatch.DanmakuReceivePacket;
 import charlie.bililivelib.danmaku.dispatch.DispatchManager;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
-import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -24,18 +21,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToInt;
-import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToShort;
 
+/**
+ * 本类用于处理Bilibili Live弹幕服务器的通信。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class DanmakuReceiver implements Runnable {
     public static final Charset UTF8 = Charset.forName("UTF-8");
 
+    /**
+     * 目前可用的弹幕服务器。
+     */
     public static final String[] CMT_SERVERS = {
             "livecmt-1.bilibili.com",
             "livecmt-2.bilibili.com"
     };
+    /** 弹幕服务器端口 */
     public static final int CMT_PORT = 788;
-    public static final int HEARTBEAT_PERIOD = 30 * 1000;
-    public static final int RESPONSE_HEADER_SIZE = 16;
+    /**
+     * 心跳包发送周期，以ms为单位
+     */
+    public static final int HEARTBEAT_PERIOD_MILLIS = 30 * 1000;
 
     @Getter
     private Room room;
@@ -70,6 +78,10 @@ public class DanmakuReceiver implements Runnable {
         checkArguments();
     }
 
+    /**
+     * 生成随机UID。
+     * @return UID
+     */
     public static long generateRandomUID() {
         return (long) (1e14 + 2e14 * Math.random());
     }
@@ -80,6 +92,9 @@ public class DanmakuReceiver implements Runnable {
         if (commentServer.isEmpty()) throw new IllegalArgumentException("commentServer is empty");
     }
 
+    /**
+     * 连接到弹幕服务器。
+     */
     public void connect() {
         if (status == Status.NOT_CONNECTED) {
             Thread thread = new Thread(this);
@@ -88,6 +103,9 @@ public class DanmakuReceiver implements Runnable {
         }
     }
 
+    /**
+     * 从弹幕服务器断开。
+     */
     public void disconnect() {
         heartbeatTimer.cancel();
         status = Status.NOT_CONNECTED;
@@ -121,41 +139,18 @@ public class DanmakuReceiver implements Runnable {
                         disconnect();
                     }
                 }
-            }, 0, HEARTBEAT_PERIOD);
+            }, 0, HEARTBEAT_PERIOD_MILLIS);
 
             while (status == Status.CONNECTED) {
-                byte[] tempBuf = new byte[4];
-                readArray(inputStream, tempBuf, 4);
-                int length = byteArrayToInt(tempBuf);
-                checkValidLength(length);
+                DanmakuReceivePacket packet = new DanmakuReceivePacket(inputStream);
+                if (packet.getBody() == null) return;
 
-                readArray(inputStream, tempBuf, 2); // Magic Number
-
-                byte[] shortBuf = new byte[2];
-                readArray(inputStream, shortBuf, 2);
-                short protocolVersion = byteArrayToShort(shortBuf);
-                //checkValidProtocolVersion(protocolVersion);
-
-                readArray(inputStream, tempBuf, 4);
-                int operationID = byteArrayToInt(tempBuf);
-
-                readArray(inputStream, tempBuf, 4); // Magic and params
-                int bodyLength = length - RESPONSE_HEADER_SIZE;
-                if (bodyLength == 0) continue;
-
-                operationID -= 1; // I don't know what this means...
-
-                DanmakuReceivePacket.Operation operation = DanmakuReceivePacket.Operation.forID(operationID);
-
-                byte[] bodyBuffer = new byte[bodyLength];
-                readArray(inputStream, bodyBuffer, bodyLength);
-
-                dispatchPacket(operation, bodyBuffer);
+                dispatchPacket(packet.getOperation(), packet.getBody());
             }
         } catch (Exception e) {
             if (status == Status.CONNECTED) {
-                disconnect();
                 fireDanmakuEvent(e, DanmakuEvent.Kind.ERROR_DOWN);
+                disconnect();
             }
         }
     }
@@ -170,16 +165,6 @@ public class DanmakuReceiver implements Runnable {
             case PLAYER_COMMAND:
                 dispatchManager.dispatch(listeners, new String(bodyBuffer), this);
         }
-    }
-
-    private void checkValidProtocolVersion(short version) throws BiliLiveException {
-        if (version != 1)
-            throw new BiliLiveException(I18n.format("msg.danmaku_protocol_error"));
-    }
-
-    private void checkValidLength(int length) throws BiliLiveException {
-        if (length < 16)
-            throw new BiliLiveException(I18n.format("msg.danmaku_protocol_error"));
     }
 
     private void startupThread() {
@@ -200,29 +185,27 @@ public class DanmakuReceiver implements Runnable {
         outputStream.write(packet.generate());
     }
 
-    private int readArray(InputStream stream, byte[] buffer, int length) throws IOException {
-        if (length > buffer.length)
-            throw new IOException("offset + length > buffer.length");
-        int readLength = 0;
-
-        while (readLength < length) {
-            int available = stream.read(buffer, 0, length - readLength);
-            if (available == 0)
-                throw new IOException("available == 0");
-            readLength += available;
-        }
-        return readLength;
-        //return stream.read(buffer, 0, length);
-    }
-
+    /**
+     * 增加弹幕服务器事件监听器。
+     * @param listener 监听器
+     */
     public void addDanmakuListener(DanmakuListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * 删除弹幕服务器事件监听器。
+     * @param listener 监听器
+     */
     public void removeDanmakuListener(DanmakuListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * 检查是否有给定弹幕服务器事件监听器。
+     * @param listener 监听器
+     * @return 结果
+     */
     public boolean hasDanmakuListener(DanmakuListener listener) {
         return listeners.contains(listener);
     }
@@ -230,6 +213,7 @@ public class DanmakuReceiver implements Runnable {
     private void fireDanmakuEvent(Object param, DanmakuEvent.Kind kind) {
         DanmakuEvent event = new DanmakuEvent(this, param, kind);
         switch (kind) {
+            case ERROR_DOWN:
             case ERROR:
                 for (DanmakuListener listener : listeners) {
                     listener.errorEvent(event);
@@ -249,16 +233,25 @@ public class DanmakuReceiver implements Runnable {
 
     }
 
+    /**
+     * 设置通信类的事件分发器管理器。
+     * @param dispatchManager 分发器管理器
+     */
     public void setDispatchManager(@NotNull DispatchManager dispatchManager) {
         this.dispatchManager = dispatchManager;
     }
 
     public void setCommentServer(@NotNull String commentServer) {
+        if (commentServer.isEmpty()) throw new IllegalArgumentException("commentServer is empty");
         this.commentServer = commentServer;
     }
 
+    /**
+     * 设置UID。
+     * @param uid UID，要求<0
+     */
     public void setUid(long uid) {
-        if (uid < 1) throw new IllegalArgumentException("commentServer is empty");
+        if (uid < 1) throw new IllegalArgumentException("uid < 1");
         this.uid = uid;
     }
 
