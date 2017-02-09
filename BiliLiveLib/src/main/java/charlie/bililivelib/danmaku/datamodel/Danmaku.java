@@ -1,8 +1,5 @@
 package charlie.bililivelib.danmaku.datamodel;
 
-import charlie.bililivelib.datamodel.Medal;
-import charlie.bililivelib.datamodel.User;
-import charlie.bililivelib.datamodel.UserGuardLevel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -65,7 +62,19 @@ public class Danmaku {
     private static final int USER_LEVEL_INFO_ROOT_INDEX = 4;
     private static final int TITLE_INFO_ROOT_INDEX = 5;
     private static final int CONTENT_INDEX = 1;
-
+    private static final int UID_CRC32_ARRAY_INDEX = 5;
+    private static final int USER_NAME_INDEX = 1;
+    private static final int UID_INDEX = 0;
+    private static final int GUARD_INDEX = 2;
+    private static final int VIP_INDEX = 3;
+    private static final int USER_LEVEL_INDEX = 0;
+    private static final int USER_EXP_INDEX = 2;
+    private static final int USER_LEVEL_RANK_INDEX = 3;
+    private static final int USER_TITLE_INDEX = 0;
+    private static final int MEDAL_LEVEL_INDEX = 0;
+    private static final int MEDAL_NAME_INDEX = 1;
+    private static final int MEDAL_MASTER_NAME_INDEX = 2;
+    private static final int MEDAL_MASTER_ROOM_INDEX = 3;
     private User user;
     private String content;
 
@@ -78,15 +87,6 @@ public class Danmaku {
         content = infoElement.get(CONTENT_INDEX).getAsString();
     }
 
-    private static final int UID_CRC32_ARRAY_INDEX = 5;
-    private static final int USER_NAME_INDEX = 1;
-    private static final int UID_INDEX = 0;
-    private static final int GUARD_INDEX = 2;
-    private static final int VIP_INDEX = 3;
-    private static final int USER_LEVEL_INDEX = 0;
-    private static final int USER_EXP_INDEX = 2;
-    private static final int USER_LEVEL_RANK_INDEX = 3;
-    private static final int USER_TITLE_INDEX = 0;
     private User buildUser(JsonArray array, Medal medal) {
         User user = new User();
         user.setUidCRC32(array.get(UID_CRC32_ROOT_INDEX).getAsJsonArray()
@@ -124,10 +124,6 @@ public class Danmaku {
         return vip == 1;
     }
 
-    private static final int MEDAL_LEVEL_INDEX = 0;
-    private static final int MEDAL_NAME_INDEX = 1;
-    private static final int MEDAL_MASTER_NAME_INDEX = 2;
-    private static final int MEDAL_MASTER_ROOM_INDEX = 3;
     private Medal buildMedal(JsonArray array) {
         if (array.size() < 4) return null;
         Medal medal = new Medal();

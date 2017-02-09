@@ -3,6 +3,7 @@ package charlie.bililivelib.room;
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.InvalidLiveAddressException;
 import charlie.bililivelib.room.datamodel.ErrorResponseJson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,12 @@ import java.io.IOException;
 
 import static charlie.bililivelib.I18n.getString;
 
+/**
+ * 用于存放直播间的直播流地址信息。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Data
 @AllArgsConstructor
 public class LiveAddresses {
@@ -28,6 +35,13 @@ public class LiveAddresses {
     private String lineBackup2;
     private String lineBackup3;
 
+    /**
+     * 从XML获取地址信息。
+     *
+     * @param xmlString XML文本
+     * @return 地址信息
+     * @throws InvalidLiveAddressException 在XML无效（这时候根本不是XML，而是JSON）时抛出
+     */
     public static LiveAddresses fromXMLString(String xmlString) throws BiliLiveException {
         if (!isValidXMLDocument(xmlString))
             processInvalidLiveAddresses(xmlString);
@@ -57,7 +71,7 @@ public class LiveAddresses {
     private static void processInvalidLiveAddresses(String xmlString) throws BiliLiveException {
         ErrorResponseJson responseJson = Globals.get().gson().fromJson(xmlString, ErrorResponseJson.class);
         String message = generateInvalidLiveAddressesMessage(responseJson);
-        throw new BiliLiveException(message);
+        throw new InvalidLiveAddressException(message);
     }
 
     private static String generateInvalidLiveAddressesMessage(ErrorResponseJson json) {

@@ -1,11 +1,10 @@
 package charlie.bililivelib.user;
 
-import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import com.google.gson.annotations.SerializedName;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -44,7 +43,10 @@ public class HeartbeatProtocol {
 
             HttpResponse response = session.getHttpHelper().getHttpClient().execute(httpGet);
             String jsonString = HttpHelper.responseToString(response);
-            HeartbeatResultInfo resultInfo = Globals.get().gson().fromJson(jsonString, HeartbeatResultInfo.class);
+            HeartbeatResultInfo resultInfo = session.getHttpHelper().responseToObject(
+                    response,
+                    HeartbeatResultInfo.class,
+                    EXCEPTION_KEY);
             if (resultInfo.code == STATUS_NOT_LOGGED_IN) throw new NotLoggedInException();
         } catch (IOException ex) {
             throw new NetworkException(I18n.getString(EXCEPTION_KEY), ex);

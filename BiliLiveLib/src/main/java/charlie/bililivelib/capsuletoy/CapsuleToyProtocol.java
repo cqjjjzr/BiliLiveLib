@@ -2,8 +2,9 @@ package charlie.bililivelib.capsuletoy;
 
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.exceptions.BiliLiveException;
+import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
-import charlie.bililivelib.net.PostArguments;
+import charlie.bililivelib.internalutil.net.PostArguments;
 import charlie.bililivelib.user.Session;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
@@ -15,6 +16,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * 用于处理扭蛋机的协议类。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class CapsuleToyProtocol {
     private static final String CAPSULE_OPEN_POST = "/api/ajaxCapsuleOpen";
     private static final String CAPSULE_INFO_GET = "/api/ajaxCapsule";
@@ -29,15 +36,35 @@ public class CapsuleToyProtocol {
         this.session = session;
     }
 
-    public OpenCapsuleToyInfo openNormal(@MagicConstant(intValues = {1, 10, 100}) int count) throws BiliLiveException {
+    /**
+     * 打开指定数量的普通扭蛋币。
+     *
+     * @param count 数量，仅能为1,10或100
+     * @return 扭蛋结果
+     * @throws NetworkException         在发生网络错误时抛出
+     * @throws IllegalArgumentException 在数量不为1,10或100时抛出
+     */
+    public OpenCapsuleToyInfo openNormal(@MagicConstant(intValues = {1, 10, 100}) int count)
+            throws BiliLiveException {
         return openCapsule("normal", count, getToken());
     }
 
-    public OpenCapsuleToyInfo openColorful(@MagicConstant(intValues = {1, 10, 100}) int count) throws BiliLiveException {
+    /**
+     * 打开指定数量的梦幻扭蛋币。
+     *
+     * @param count 数量，仅能为1,10或100
+     * @return 扭蛋结果
+     * @throws NetworkException         在发生网络错误时抛出
+     * @throws IllegalArgumentException 在数量不为1,10或100时抛出
+     */
+    public OpenCapsuleToyInfo openColorful(@MagicConstant(intValues = {1, 10, 100}) int count)
+            throws BiliLiveException {
         return openCapsule("colorful", count, getToken());
     }
 
     private OpenCapsuleToyInfo openCapsule(String type, int count, String token) throws BiliLiveException {
+        if (count != 1 && count != 10 && count != 100)
+            throw new IllegalArgumentException("count must be 1, 10 or 100.");
         JsonObject rootObject = session.getHttpHelper().postBiliLiveJSON(CAPSULE_OPEN_POST,
                 new PostArguments()
                         .add("type", type)
@@ -52,6 +79,13 @@ public class CapsuleToyProtocol {
         return Globals.get().gson().fromJson(rootObject, OpenCapsuleToyInfo.class);
     }
 
+    /**
+     * 获取当前用户的扭蛋币拥有情况。
+     *
+     * @return 拥有情况
+     * @throws NetworkException     在发生网络错误时抛出
+     * @throws NotLoggedInException 未登录时抛出
+     */
     public CapsuleToyInfo getCapsuleToyInfo() throws BiliLiveException {
         CapsuleToyInfo info = session.getHttpHelper().getBiliLiveJSON(
                 CAPSULE_INFO_GET, CapsuleToyInfo.class, EXCEPTION_KEY);
@@ -66,6 +100,9 @@ public class CapsuleToyProtocol {
         throw new NotLoggedInException();
     }
 
+    /**
+     * 用于存放当前用户的扭蛋币拥有情况。
+     */
     @Getter
     @ToString
     public static class CapsuleToyInfo {
@@ -133,6 +170,9 @@ public class CapsuleToyProtocol {
         }
     }
 
+    /**
+     * 用于存放扭蛋结果。
+     */
     @Getter
     @ToString
     public static class OpenCapsuleToyInfo {

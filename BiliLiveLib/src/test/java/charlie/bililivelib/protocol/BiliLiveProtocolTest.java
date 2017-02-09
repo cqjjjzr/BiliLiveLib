@@ -72,7 +72,7 @@ public class BiliLiveProtocolTest {
     @Test
     public void getLiveAddresses() throws Exception {
         Room room = new Room(SIXTEEN_ROOM_ID, session);
-        System.out.println(room.getLiveAddresses());
+        System.out.println(room.fetchLiveAddresses());
     }
 
     @org.junit.Test

@@ -2,7 +2,7 @@ package charlie.bililivelib.streamer;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.I18n;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import charlie.bililivelib.room.Room;
 import charlie.bililivelib.streamer.event.DownloadEvent;
 import org.apache.http.HttpResponse;
@@ -20,13 +20,8 @@ import java.nio.file.StandardOpenOption;
  * @author Charlie Jiang
  * @since rv1
  */
-public class DirectStreamDownloader extends AbstractDownloader implements Runnable {
+public class DirectStreamDownloader extends AbstractThreadBasedDownloader {
     private static final int _1_KB = 1024;
-
-    private InputStream stream;
-
-    private Thread thread;
-    private String userAgent;
 
     public DirectStreamDownloader(URL liveURL, Room room, File path) {
         this(liveURL, room, path, BiliLiveLib.DEFAULT_USER_AGENT);
@@ -39,39 +34,11 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
         this.userAgent = userAgent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void start() {
-        if (status != Status.STOPPED && status != Status.ERROR) return;
-        thread = new Thread(this);
-        thread.start();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void tryStop() {
-        status = Status.STOPPING;
-
-        fireDownloadEvent(I18n.getString("msg.try_stopping"), DownloadEvent.Kind.STOPPED);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public void forceStop() {
-        thread.stop();
-        status = Status.STOPPED;
-        fireDownloadEvent(I18n.getString("msg.force_stopped"), DownloadEvent.Kind.STOPPED);
-    }
-
     @Override
-    public void run() {
+    protected void download() {
         try {
             status = Status.STARTING;
-            fireDownloadEvent(I18n.getString("msg.stream_starting"), DownloadEvent.Kind.STARTING);
+            eventStarting();
             HttpResponse response = new HttpHelper().init(userAgent)
                     .createGetResponse(liveURL);
 
@@ -79,25 +46,37 @@ public class DirectStreamDownloader extends AbstractDownloader implements Runnab
             try (OutputStream fileStream = Files.newOutputStream(path.toPath(), StandardOpenOption.TRUNCATE_EXISTING);
                  InputStream liveStream = HttpHelper.responseToInputStream(response)
             ) {
-                fireDownloadEvent(I18n.format("msg.stream_started",
-                        path.getAbsolutePath()), DownloadEvent.Kind.STARTED);
+                eventStarted();
                 int readLength;
                 byte[] buffer = new byte[_1_KB];
-                while ((readLength = liveStream.read(buffer, 0, _1_KB)) != -1) {
-                    if (status == Status.STOPPING) break;
+                while ((readLength = liveStream.read(buffer, 0, _1_KB)) != -1 &&
+                        status != Status.STOPPING) {
                     fileStream.write(buffer, 0, readLength);
                 }
-                if (status == Status.STARTED) { // Exits normally
-                    fireDownloadEvent(I18n.format("msg.stream_stopped",
-                            path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
-                } else if (status == Status.STOPPING) {
-                    fireDownloadEvent(I18n.format("msg.stream_manually_stopped",
-                            path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
-                }
+                eventStopped();
                 status = Status.STOPPED;
             }
         } catch (Exception e) {
             reportException(e);
+        }
+    }
+
+    private void eventStarting() {
+        fireDownloadEvent(I18n.getString("msg.stream_starting"), DownloadEvent.Kind.STARTING);
+    }
+
+    private void eventStarted() {
+        fireDownloadEvent(I18n.format("msg.stream_started",
+                path.getAbsolutePath()), DownloadEvent.Kind.STARTED);
+    }
+
+    private void eventStopped() {
+        if (status == Status.STARTED) { // Exits normally
+            fireDownloadEvent(I18n.format("msg.stream_stopped",
+                    path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
+        } else if (status == Status.STOPPING) { //Exits manually
+            fireDownloadEvent(I18n.format("msg.stream_manually_stopped",
+                    path.getAbsoluteFile()), DownloadEvent.Kind.STOPPED);
         }
     }
 }

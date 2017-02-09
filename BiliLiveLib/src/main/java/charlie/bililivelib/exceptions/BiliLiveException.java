@@ -1,10 +1,11 @@
 package charlie.bililivelib.exceptions;
 
-import charlie.bililivelib.I18n;
-import org.jetbrains.annotations.Nls;
-
-import java.util.Arrays;
-
+/**
+ * 所有本Library中异常的根类。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class BiliLiveException extends Exception {
     public BiliLiveException() {
         super();
@@ -16,14 +17,5 @@ public class BiliLiveException extends Exception {
 
     public BiliLiveException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public static BiliLiveException createHttpError(
-            @Nls String message,
-            int status) {
-        BiliLiveException exception = new BiliLiveException(message + I18n.format("exception.http_error", status));
-        StackTraceElement[] elementsOriginal = exception.getStackTrace();
-        exception.setStackTrace(Arrays.copyOfRange(elementsOriginal, 1, elementsOriginal.length));
-        return exception;
     }
 }

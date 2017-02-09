@@ -2,9 +2,11 @@ package charlie.bililivelib.room;
 
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
-import charlie.bililivelib.datamodel.UserGuardLevel;
+import charlie.bililivelib.danmaku.datamodel.UserGuardLevel;
 import charlie.bililivelib.exceptions.BiliLiveException;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.exceptions.NetworkException;
+import charlie.bililivelib.exceptions.RoomIDNotFoundException;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import charlie.bililivelib.room.datamodel.RoomInfoResponseJson;
 import charlie.bililivelib.user.Session;
 import lombok.AccessLevel;
@@ -26,14 +28,24 @@ import static charlie.bililivelib.I18n.getString;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 
+/**
+ * 存放直播间的信息。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Getter
 @ToString
 public class Room {
-    public static final String LIVE_ADDRESSES_MF_GET = "/api/playurl?cid={0,number,###}&player=1&quality=0";
-    private static final int RESPONSE_SUCCESS_CODE = 0;
-    private static final Pattern REAL_ROOMID_PATTERN = Pattern.compile("(?<=var ROOMID = )(\\d+)(?=;)");
+    private static final int RESPONSE_SUCCESS = 0;
+    private static final int RESPONSE_ROOM_NOT_FOUND = -400;
+
+    private static final String LIVE_ADDRESSES_MF_GET = "/api/playurl?cid={0,number,###}&player=1&quality=0";
     private static final String REAL_ROOMID_GET = "/";
     private static final String LIVE_GET_INFO_GET = "/live/getInfo?roomid=";
+
+    private static final Pattern REAL_ROOMID_PATTERN = Pattern.compile("(?<=var ROOMID = )(\\d+)(?=;)");
+
     private int roomID;
     private String roomTitle;
     private Image coverImage;
@@ -52,6 +64,14 @@ public class Room {
     @Getter(AccessLevel.PRIVATE)
     private Session session;
 
+    /**
+     * 对于给定房间号和会话，创建并填充一个直播间信息对象。
+     *
+     * @param roomID  直播间号（可以是三位短直播间号）
+     * @param session 会话
+     * @throws NetworkException        在发生网络问题时抛出
+     * @throws RoomIDNotFoundException 在房间号未找到时抛出
+     */
     public Room(int roomID, @NotNull Session session) throws BiliLiveException {
         if (roomID < 0) throw new IllegalArgumentException("Room id < 0");
         this.roomID = roomID;
@@ -61,6 +81,7 @@ public class Room {
     }
 
     private void fillRealRoomID() throws BiliLiveException {
+        if (roomID >= 1000) return; // Only need to get real room id when room id is 3-digit short id.
         try {
             HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getRealRoomIDRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
@@ -68,13 +89,13 @@ public class Room {
             if (statusCode == HTTP_OK) {
                 String htmlString = HttpHelper.responseToString(response);
                 parseAndFillRealRoomID(htmlString);
-            } else if (statusCode == HTTP_NOT_FOUND) { //NOT FOUND means invalid room id.
-                throw new BiliLiveException(I18n.format("exception.roomid_not_found", roomID));
+            } else if (statusCode == HTTP_NOT_FOUND) { // NOT FOUND means invalid room id.
+                throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
             } else {
-                throw BiliLiveException.createHttpError(getString("exception.roomid"), statusCode);
+                throw NetworkException.createHttpError(getString("exception.roomid"), statusCode);
             }
         } catch (IOException ex) {
-            throw new BiliLiveException(getString("exception.roomid"), ex);
+            throw new NetworkException(getString("exception.roomid"), ex);
         }
     }
 
@@ -83,12 +104,12 @@ public class Room {
         return REAL_ROOMID_GET + originalRoomID;
     }
 
-    private void parseAndFillRealRoomID(@NotNull String httpString) throws BiliLiveException {
+    private void parseAndFillRealRoomID(@NotNull String httpString) throws RoomIDNotFoundException {
         Matcher matcher = REAL_ROOMID_PATTERN.matcher(httpString);
         if (matcher.find()) {
             roomID = Integer.parseInt(matcher.group());
         } else {
-            throw new BiliLiveException(I18n.format("exception.roomid_not_found", roomID));
+            throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
         }
     }
 
@@ -102,9 +123,9 @@ public class Room {
                 fromJson(jsonString);
                 return;
             }
-            throw BiliLiveException.createHttpError(getString("exception.fill_room"), statusCode);
+            throw NetworkException.createHttpError(getString("exception.fill_room"), statusCode);
         } catch (IOException ex) {
-            throw new BiliLiveException(getString("exception.fill_room"), ex);
+            throw new NetworkException(getString("exception.fill_room"), ex);
         }
     }
 
@@ -122,7 +143,9 @@ public class Room {
         RoomInfoResponseJson jsonObject = Globals.get().gson()
                 .fromJson(jsonString, RoomInfoResponseJson.class);
 
-        if (jsonObject.getCode() != RESPONSE_SUCCESS_CODE) {
+        if (jsonObject.getCode() == RESPONSE_ROOM_NOT_FOUND) {
+            throw new RoomIDNotFoundException(generateInvalidLiveInfoMessage(jsonObject));
+        } else if (jsonObject.getCode() != RESPONSE_SUCCESS) {
             throw new BiliLiveException(generateInvalidLiveInfoMessage(jsonObject));
         }
 
@@ -132,26 +155,26 @@ public class Room {
         status =          RoomStatus.forName(data.getLiveStatus());
         living =          data.isLiving();
         area =            Area.forID(data.getAreaID());
-        coverImage =      downloadImage(data.getCoverImageURL());
         masterUsername =  data.getMasterUsername();
         masterUID =       data.getMasterID();
         masterFansCount = data.getMasterFansCount();
         roomScore =       data.getLiveScore();
         liveTimelineMilliSecond = data.getLiveTimelineMSecond();
+        coverImage = downloadImage(data.getCoverImageURL());
     }
 
-    private Image downloadImage(@NotNull String url) throws BiliLiveException {
+    private Image downloadImage(@NotNull String url) throws NetworkException {
         try {
             HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(url);
             Image image = ImageIO.read(response.getEntity().getContent());
             EntityUtils.consume(response.getEntity());
             return image;
         } catch (IOException ex) {
-            throw new BiliLiveException(getString("exception.fill_room_invalid"), ex);
+            throw new NetworkException(getString("exception.fill_room_invalid"), ex);
         }
     }
 
-    public LiveAddresses getLiveAddresses() throws BiliLiveException {
+    public LiveAddresses fetchLiveAddresses() throws BiliLiveException {
         try {
             HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getLiveAddressesRequestURL(roomID));
             int statusCode = HttpHelper.getStatusCode(response);
@@ -160,9 +183,9 @@ public class Room {
                 String xmlString = HttpHelper.responseToString(response);
                 return LiveAddresses.fromXMLString(xmlString);
             }
-            throw BiliLiveException.createHttpError(getString("exception.live_addresses"), statusCode);
+            throw NetworkException.createHttpError(getString("exception.live_addresses"), statusCode);
         } catch (IOException ex) {
-            throw new BiliLiveException(getString("exception.live_addresses"), ex);
+            throw new NetworkException(getString("exception.live_addresses"), ex);
         }
     }
 
@@ -171,6 +194,9 @@ public class Room {
         return MessageFormat.format(LIVE_ADDRESSES_MF_GET, roomID);
     }
 
+    /**
+     * 标识直播间的直播状态。
+     */
     public enum RoomStatus {
         PREPARING, LIVE, ROUND;
 
@@ -191,6 +217,9 @@ public class Room {
         }
     }
 
+    /**
+     * 标识直播间的分区。
+     */
     public enum Area {
         PHONE_LIVE(11),
         SINGER_DANCER(10),
@@ -227,6 +256,9 @@ public class Room {
         }
     }
 
+    /**
+     * 用于存放直播间的送礼排名。
+     */
     @Getter
     public static class GiftRankUser {
         private int uid;

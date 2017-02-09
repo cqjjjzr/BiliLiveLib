@@ -1,4 +1,4 @@
-package charlie.bililivelib.net;
+package charlie.bililivelib.internalutil.net;
 
 import org.apache.http.ssl.TrustStrategy;
 import org.jetbrains.annotations.Contract;
@@ -9,6 +9,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+/**
+ * 用于验证Bilibili Https协议。仅内部使用。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class BilibiliTrustStrategy implements TrustStrategy {
     //UPDATE IF BILIBILI's CERT CHANGES.
     public static final String BILIBILI_CERT_FINGERPRINT = "3F1455BB9988290A4019687C799C507A54BA143A";

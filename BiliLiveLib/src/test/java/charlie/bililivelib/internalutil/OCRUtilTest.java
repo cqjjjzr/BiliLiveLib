@@ -1,6 +1,6 @@
 package charlie.bililivelib.internalutil;
 
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import charlie.bililivelib.user.Session;
 import lombok.Data;
 import org.apache.http.client.HttpClient;

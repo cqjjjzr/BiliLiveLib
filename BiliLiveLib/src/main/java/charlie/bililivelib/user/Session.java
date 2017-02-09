@@ -2,7 +2,7 @@ package charlie.bililivelib.user;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import lombok.Getter;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;

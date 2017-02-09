@@ -3,7 +3,7 @@ package charlie.bililivelib.smalltv;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import charlie.bililivelib.user.Session;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
@@ -26,7 +26,6 @@ public class SmallTVProtocol {
     private static final String JOIN_STV_GET_PT2 = "&id=";
     private static final String GET_CURRENT_STV_GET = "/SmallTV/index?roomid=";
     private static final String GET_REWARD_GET = "/SmallTV/getReward?id=";
-    private static final int STATUS_NOT_LOGGED_IN = -101;
     private final HttpHelper httpHelper;
 
     public SmallTVProtocol(Session session) {
@@ -58,20 +57,16 @@ public class SmallTVProtocol {
      * 加入给定小电视抽奖。
      * @param smallTV 给定小电视
      * @throws BiliLiveException 在加入失败时抛出
+     * @throws NotLoggedInException 未登录时抛出
      * @throws NetworkException 发生网络问题时抛出
      */
     public void joinLottery(SmallTV smallTV) throws BiliLiveException {
-        JsonObject rootObject = httpHelper.getBiliLiveJSON(
+        JsonObject rootObject = httpHelper.getBiliLiveJSONAndCheckLogin(
                 generateJoinSmallTVRequest(smallTV.getRealRoomID(), smallTV.getSmallTVID()),
                 JsonObject.class,
                 "exception.smalltv_join");
 
-        if (isNotLoggedIn(rootObject)) throw new NotLoggedInException();
         if (!isJoinSuccessfullyAndNotStarted(rootObject)) throw new BiliLiveException(getErrorMessage(rootObject));
-    }
-
-    private boolean isNotLoggedIn(JsonObject rootObject) {
-        return rootObject.get("code").getAsInt() == STATUS_NOT_LOGGED_IN;
     }
 
     private String getErrorMessage(JsonObject rootObject) {
@@ -102,13 +97,15 @@ public class SmallTVProtocol {
     /**
      * 获取给定小电视获取到的奖励。
      * @param smallTVID 给定小电视的ID
-     * @return 奖励数据结构
+     * @return 抽奖结果
+     * @throws NotLoggedInException 未登录时抛出
      * @throws NetworkException 发生网络问题时抛出
+     * @throws IllegalArgumentException 给定ID<1时抛出
      */
     public SmallTVReward getReward(int smallTVID) throws BiliLiveException {
         if (smallTVID < 1) throw new IllegalArgumentException("SmallTVID < 1");
 
-        return httpHelper.getBiliLiveJSON(generateGetRewardRequest(smallTVID), SmallTVReward.class,
+        return httpHelper.getBiliLiveJSONAndCheckLogin(generateGetRewardRequest(smallTVID), SmallTVReward.class,
                 "exception.smalltv_reward");
     }
 

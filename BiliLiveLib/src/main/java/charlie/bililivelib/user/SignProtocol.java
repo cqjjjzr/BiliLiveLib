@@ -3,7 +3,7 @@ package charlie.bililivelib.user;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
-import charlie.bililivelib.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.HttpHelper;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.ToString;

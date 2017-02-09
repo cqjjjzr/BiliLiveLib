@@ -28,6 +28,7 @@ public abstract class AbstractDownloader {
     protected Status status = Status.STOPPED;
     @Getter
     protected String message;
+    protected String userAgent;
 
     private List<DownloadListener> listeners = new LinkedList<>();
 
@@ -43,10 +44,6 @@ public abstract class AbstractDownloader {
     protected void reportException(Throwable e) {
         status = Status.ERROR;
         message = generateErrorMessage(e);
-    }
-
-    protected void startupThread() {
-        Thread.currentThread().setName(this.getClass().getSimpleName() + "-" + room.getRoomID());
     }
 
     /**

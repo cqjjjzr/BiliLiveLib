@@ -1,8 +1,8 @@
 package charlie.bililivelib;
 
-import charlie.bililivelib.net.BilibiliTrustStrategy;
-import charlie.bililivelib.net.HttpHelper;
-import charlie.bililivelib.net.PostArguments;
+import charlie.bililivelib.internalutil.net.BilibiliTrustStrategy;
+import charlie.bililivelib.internalutil.net.HttpHelper;
+import charlie.bililivelib.internalutil.net.PostArguments;
 import org.apache.http.HttpResponse;
 import org.junit.Test;
 

@@ -1,7 +1,7 @@
 package charlie.bililivelib;
 
 import charlie.bililivelib.internalutil.OCRUtil;
-import charlie.bililivelib.net.BilibiliTrustStrategy;
+import charlie.bililivelib.internalutil.net.BilibiliTrustStrategy;
 import com.gargoylesoftware.htmlunit.Cache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

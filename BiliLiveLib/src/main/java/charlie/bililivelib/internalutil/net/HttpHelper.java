@@ -1,9 +1,11 @@
-package charlie.bililivelib.net;
+package charlie.bililivelib.internalutil.net;
 
 import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
+import charlie.bililivelib.exceptions.NotLoggedInException;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -19,7 +21,15 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * 用于方便Http Client访问API。仅内部使用，可能发生修改。
+ * 注意，本类中的大部分'get'意义为Http Get，而非Getter/Setter中的Get!
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class HttpHelper {
+    private static final int STATUS_NOT_LOGGED_IN = -101;
     private final SSLContext bilibiliSSLContext = Globals.get().getBilibiliSSLContext();
     private final HttpHost biliLiveRoot = Globals.get().getBiliLiveRoot();
     @Getter
@@ -94,6 +104,19 @@ public class HttpHelper {
 
     public <T> T getBiliLiveJSON(String url, Class<T> clazz, String exceptionKey) throws BiliLiveException {
         return getJSON(biliLiveRoot, url, clazz, exceptionKey);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getBiliLiveJSONAndCheckLogin(String url, Class<T> clazz, String exceptionKey)
+            throws BiliLiveException {
+        JsonObject rootObject = getJSON(biliLiveRoot, url, JsonObject.class, exceptionKey);
+        if (isNotLoggedIn(rootObject)) throw new NotLoggedInException();
+        if (clazz == JsonObject.class) return (T) rootObject;
+        return Globals.get().gson().fromJson(rootObject, clazz);
+    }
+
+    private boolean isNotLoggedIn(JsonObject rootObject) {
+        return rootObject.get("code").getAsInt() == STATUS_NOT_LOGGED_IN;
     }
 
     public <T> T postJSON(HttpHost httpHost, String url, PostArguments arguments,
