@@ -57,7 +57,7 @@ public class SmallTVReward {
     }
 
     public boolean isStillDrawing() {
-        return data.status == 4;
+        return data.status == 2;
     }
 
     private static class DataBean {
