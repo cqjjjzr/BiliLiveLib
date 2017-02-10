@@ -10,6 +10,23 @@ import java.io.InputStream;
 import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToInt;
 import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToShort;
 
+/**
+ * 用于从弹幕服务器发回的数据包。<br />
+ * 数据包的结构如下:<br />
+ * {@code +-----+-------+-----+--------+-------+----------+}<br />
+ * {@code | LEN | MAGIC | UNK | OPCODE | B.LEN |   BODY   |}<br />
+ * {@code |  4  | X'0F' |  2  |   4    |   4   | Variable |}<br />
+ * {@code +-----+-------+-----+--------+-------+----------+}<br />
+ * - LEN:    数据包长度，包含自身长度，int类型;<br />
+ * - MAGIC:  魔数，short类型，固定0x0F;<br />
+ * - UNK:    未知参数，int类型;<br />
+ * - OPCODE: 操作码，int类型。具体见{@link DanmakuReceivePacket.Operation};<br />
+ * - B.LEN:  BODY的长度，int类型;<br />
+ * - BODY:   数据包体，长度可变。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Getter
 public final class DanmakuReceivePacket {
     private static final int PACKET_HEADER_SIZE = 16;
@@ -17,6 +34,13 @@ public final class DanmakuReceivePacket {
     private Operation operation = null;
     private byte[] body = null;
 
+    /**
+     * 对于指定输入流，读取并构造数据包结构。
+     *
+     * @param inputStream 输入流
+     * @throws IOException       发生网络错误时抛出
+     * @throws BiliLiveException 协议错误时抛出
+     */
     public DanmakuReceivePacket(InputStream inputStream) throws IOException, BiliLiveException {
         byte[] tempBuf = new byte[4];
         readArray(inputStream, tempBuf, 4);
@@ -27,7 +51,7 @@ public final class DanmakuReceivePacket {
 
         byte[] shortBuf = new byte[2];
         readArray(inputStream, shortBuf, 2);
-        short protocolVersion = byteArrayToShort(shortBuf);
+        short unknown = byteArrayToShort(shortBuf);
         //checkValidProtocolVersion(protocolVersion);
 
         readArray(inputStream, tempBuf, 4);
@@ -70,6 +94,9 @@ public final class DanmakuReceivePacket {
             throw new BiliLiveException(I18n.format("msg.danmaku_protocol_error"));
     }
 
+    /**
+     * 指示服务器发回数据类型。
+     */
     public enum Operation {
         PLAYER_COUNT(new int[]{0, 1, 2}),
         PLAYER_COMMAND(new int[]{3, 4}),

@@ -7,6 +7,7 @@ import lombok.Data;
  *
  * @author Charlie Jiang
  * @since rv1
+ * @see Danmaku
  */
 @Data
 public class User {

@@ -56,6 +56,10 @@ public class SmallTVReward {
         return data.status;
     }
 
+    public boolean isStillDrawing() {
+        return data.status == 4;
+    }
+
     private static class DataBean {
         /*
          * fname : 奶酪酪酪酪

@@ -8,6 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * 分发直播间状态改变事件的分发器。对COMMAND为'LIVE', 'PREPARING'和'ROUND'的事件有效。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 public class StartStopDispatcher extends AbstractJSONDispatcher {
     public static final String[] ACCEPTABLE_COMMANDS = {
             "LIVE", "PREPARING", "ROUND"
@@ -27,6 +33,12 @@ public class StartStopDispatcher extends AbstractJSONDispatcher {
         return ACCEPTABLE_COMMANDS;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param listeners 监听器列表
+     * @param rootObject 事件内容产生的JSON对象结构
+     * @param source 事件发生源
+     */
     @Override
     public void dispatch(List<DanmakuListener> listeners, JsonObject rootObject, Object source) {
         boolean living = getCommand(rootObject).equals("LIVE");

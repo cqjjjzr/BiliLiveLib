@@ -5,6 +5,12 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * 用于封装弹幕服务器收到的用户弹幕。
+ *
+ * @author Charlie Jiang
+ * @since rv1
+ */
 @Getter
 @ToString
 public class Danmaku {
@@ -90,7 +96,7 @@ public class Danmaku {
     private User buildUser(JsonArray array, Medal medal) {
         User user = new User();
         user.setUidCRC32(array.get(UID_CRC32_ROOT_INDEX).getAsJsonArray()
-                                .get(UID_CRC32_ARRAY_INDEX).getAsInt());
+                .get(UID_CRC32_ARRAY_INDEX).getAsInt());
 
         JsonArray userInfoArray = array.get(USER_INFO_ROOT_INDEX).getAsJsonArray();
         user.setName(userInfoArray.get(USER_NAME_INDEX).getAsString());

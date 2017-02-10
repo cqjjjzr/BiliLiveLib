@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * 用于接收弹幕事件的监听器。
- * 通常情况下使用{@link DanmakuAdapter}。<br />
- * 注意，必须在DanmakuReceiver的DispatcherManager中注册了特定Dispatcher才能接收到对应事件。
+ * 强烈建议在通常情况下使用{@link DanmakuAdapter}。本类可能会改变，而使用Adapter可以一定程度上减少本类修改时对用户代码的破坏。<br />
+ * 注意，必须在DanmakuReceiver的DispatcherManager中注册了特定Dispatcher才能接收到对应事件。<br />
  *
  * @author Charlie Jiang
  * @see DanmakuAdapter

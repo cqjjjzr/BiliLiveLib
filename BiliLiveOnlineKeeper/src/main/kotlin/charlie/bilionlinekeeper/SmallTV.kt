@@ -5,6 +5,7 @@ import charlie.bililivelib.danmaku.dispatch.GlobalGiftDispatcher
 import charlie.bililivelib.danmaku.event.DanmakuAdapter
 import charlie.bililivelib.danmaku.event.DanmakuEvent
 import charlie.bililivelib.exceptions.BiliLiveException
+import charlie.bililivelib.internalutil.MiscUtil
 import charlie.bililivelib.room.Room
 import charlie.bililivelib.smalltv.SmallTV
 import charlie.bililivelib.smalltv.SmallTVProtocol
@@ -24,7 +25,7 @@ class SmallTV(session: Session,
     override fun globalGiftEvent(event: DanmakuEvent) {
         val smallTV = event.param as SmallTV
         (protocol.getSmallTVRoom(smallTV.realRoomID) ?: return)
-                .joinedSmallTVs
+                .notJoinedSmallTVs
                 .filter { it.smallTVID == smallTV.smallTVID }
                 .apply {
                     if (isEmpty()) return
@@ -71,23 +72,35 @@ class SmallTV(session: Session,
     }
 
     private inner class SingleSmallTV(countDownSeconds: Int, smallTV: SmallTV, logger: Logger) : Runnable {
+        private val WAIT_TIME_MILLIS = 5000L
+
         private val countDownMillis: Long
         private val smallTV: SmallTV
         private val logger: Logger
 
         override fun run() {
+            startupThread()
             try {
                 protocol.apply {
                     joinLottery(smallTV)
                     logJoinLottery(smallTV)
                     Thread.sleep(countDownMillis)
-                    logReward(getReward(smallTV.smallTVID))
+                    var reward = getReward(smallTV.smallTVID)
+                    while (reward.isStillDrawing) {
+                        MiscUtil.sleepMillis(WAIT_TIME_MILLIS)
+                        reward = getReward(smallTV.smallTVID)
+                    }
+                    logReward(reward)
                 }
             } catch(e: InterruptedException) {
                 return
             } catch(e: BiliLiveException) {
                 logSingleException(e)
             }
+        }
+
+        private fun startupThread() {
+            Thread.currentThread().name = "SmallTV-Wait-${smallTV.smallTVID}"
         }
 
         private fun logReward(reward: SmallTVReward) {
