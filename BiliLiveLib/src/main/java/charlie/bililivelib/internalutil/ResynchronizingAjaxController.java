@@ -1,4 +1,4 @@
-package charlie.bililivelib.user;
+package charlie.bililivelib.internalutil;
 
 import com.gargoylesoftware.htmlunit.AjaxController;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -16,8 +16,9 @@ import java.lang.ref.WeakReference;
  * are directly useful for the user. To easily have a testable state, these calls
  * are performed synchronously.
  * <p>
- * <red>如果你仔细比对该类和NicelyResynchronizingAjaxController，你就会发现该类和NicelyResynchronizingAjaxController唯一的不同就是
- * 本类不会输出日志。这正是我们希望解决的。</red>
+ * <span style="color:red">如果你仔细比对该类和NicelyResynchronizingAjaxController，
+ * 你就会发现该类和NicelyResynchronizingAjaxController唯一的不同就是
+ * 本类不会输出日志。这正是我们希望解决的。</span>
  *
  * @author Marc Guillemot
  */
@@ -68,5 +69,4 @@ public class ResynchronizingAjaxController extends AjaxController {
         stream.defaultReadObject();
         init();
     }
-
 }

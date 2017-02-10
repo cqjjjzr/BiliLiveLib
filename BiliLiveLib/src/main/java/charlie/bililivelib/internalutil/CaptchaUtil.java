@@ -18,13 +18,6 @@ public class CaptchaUtil {
         this.ocrUtil = ocrUtil;
     }
 
-    /**
-     * Calculate the calculating captcha image. Used at getting Free Silver Treasures.<br />
-     * <s>It recognizes the image into string and then eval it as JavaScript. So we get the result of the formula.</s>
-     * Now we directly parse the formula.
-     * @param image Image to calculate captcha.
-     * @return Calculated value.
-     */
     @Contract(pure = true)
     public int evalCalcCaptcha(BufferedImage image) {
         String str = ocrUtil.ocrCalcCaptcha(image);

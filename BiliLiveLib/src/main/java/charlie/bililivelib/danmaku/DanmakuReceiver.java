@@ -248,7 +248,7 @@ public class DanmakuReceiver implements Runnable {
 
     /**
      * 设置UID。
-     * @param uid UID，要求<0
+     * @param uid UID，必须{@code > 0}
      */
     public void setUid(long uid) {
         if (uid < 1) throw new IllegalArgumentException("uid < 1");

@@ -5,6 +5,7 @@ import charlie.bililivelib.Globals;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.WrongCaptchaException;
+import charlie.bililivelib.internalutil.ResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.IncorrectnessListenerImpl;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -29,9 +30,9 @@ import java.util.Set;
 import static charlie.bililivelib.user.SessionLoginHelper.LoginStatus.*;
 
 /**
- * 用于登录会话的工具类。注意，由于无法直接访问Bilibili直播登录API，因此本类直接使用了HtmlUnit进行模拟登录。<br />
- * 因此，该类的执行效率极低，请勿频繁使用此类。<br />
- * <red>约定：本类所有public方法在传入Null参数时抛出NullPointerException。</red>
+ * 用于登录会话的工具类。注意，由于无法直接访问Bilibili直播登录API，因此本类直接使用了HtmlUnit进行模拟登录。<br>
+ * 因此，该类的执行效率极低，请勿频繁使用此类。<br>
+ * <span style="color:red">约定：本类所有public方法在传入Null参数时抛出NullPointerException。</span>
  *
  * @author Charlie Jiang
  * @see Session

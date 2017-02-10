@@ -100,7 +100,7 @@ public class SmallTVProtocol {
      * @return 抽奖结果
      * @throws NotLoggedInException 未登录时抛出
      * @throws NetworkException 发生网络问题时抛出
-     * @throws IllegalArgumentException 给定ID<1时抛出
+     * @throws IllegalArgumentException 给定ID{@code < 1}时抛出
      */
     public SmallTVReward getReward(int smallTVID) throws BiliLiveException {
         if (smallTVID < 1) throw new IllegalArgumentException("SmallTVID < 1");

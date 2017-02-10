@@ -11,17 +11,17 @@ import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToInt
 import static charlie.bililivelib.internalutil.ByteArrayOperation.byteArrayToShort;
 
 /**
- * 用于从弹幕服务器发回的数据包。<br />
- * 数据包的结构如下:<br />
- * {@code +-----+-------+-----+--------+-------+----------+}<br />
- * {@code | LEN | MAGIC | UNK | OPCODE | B.LEN |   BODY   |}<br />
- * {@code |  4  | X'0F' |  2  |   4    |   4   | Variable |}<br />
- * {@code +-----+-------+-----+--------+-------+----------+}<br />
- * - LEN:    数据包长度，包含自身长度，int类型;<br />
- * - MAGIC:  魔数，short类型，固定0x0F;<br />
- * - UNK:    未知参数，int类型;<br />
- * - OPCODE: 操作码，int类型。具体见{@link DanmakuReceivePacket.Operation};<br />
- * - B.LEN:  BODY的长度，int类型;<br />
+ * 用于从弹幕服务器发回的数据包。<br>
+ * 数据包的结构如下:<br>
+ * {@code +-----+-------+-----+--------+-------+----------+}<br>
+ * {@code | LEN | MAGIC | UNK | OPCODE | B.LEN | --BODY-- |}<br>
+ * {@code | -4- | X'0F' | -2- | --4--- | --4-- | Variable |}<br>
+ * {@code +-----+-------+-----+--------+-------+----------+}<br>
+ * - LEN:    数据包长度，包含自身长度，int类型;<br>
+ * - MAGIC:  魔数，short类型，固定0x0F;<br>
+ * - UNK:    未知参数，int类型;<br>
+ * - OPCODE: 操作码，int类型。具体见{@link DanmakuReceivePacket.Operation};<br>
+ * - B.LEN:  BODY的长度，int类型;<br>
  * - BODY:   数据包体，长度可变。
  *
  * @author Charlie Jiang

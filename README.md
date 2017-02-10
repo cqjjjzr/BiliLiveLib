@@ -1,2 +1,2 @@
 # BiliLiveLib
-Library to access Bilibili Live.
+A library to access Bilibili Live.

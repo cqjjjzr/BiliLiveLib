@@ -11,17 +11,17 @@ import java.io.IOException;
 import static charlie.bililivelib.danmaku.DanmakuReceiver.UTF8;
 
 /**
- * 用于封装发送到弹幕服务器的数据包。<br />
- * 数据包的结构如下:<br />
- * {@code +-----+-------+-----+--------+-------+----------+}<br />
- * {@code | LEN | MAGIC | VER | OPCODE | PARAM |   BODY   |}<br />
- * {@code |  4  | X'0F' |  2  |   4    |   4   | Variable |}<br />
- * {@code +-----+-------+-----+--------+-------+----------+}<br />
- * - LEN:    数据包长度，包含自身长度，int类型;<br />
- * - MAGIC:  魔数，short类型，固定0x0F;<br />
- * - VER:    协议版本，short类型，目前仅支持0x01;<br />
- * - OPCODE: 操作码，int类型。具体见{@link DanmakuPacket.Action};<br />
- * - PARAM:  操作参数，int类型，默认0x01;<br />
+ * 用于封装发送到弹幕服务器的数据包。<br>
+ * 数据包的结构如下:<br>
+ * {@code +-----+-------+-----+--------+-------+----------+}<br>
+ * {@code | LEN | MAGIC | VER | OPCODE | PARAM | --BODY-- |}<br>
+ * {@code | -4- | X'0F' | -2- | --4--- | --4-- | Variable |}<br>
+ * {@code +-----+-------+-----+--------+-------+----------+}<br>
+ * - LEN:    数据包长度，包含自身长度，int类型;<br>
+ * - MAGIC:  魔数，short类型，固定0x0F;<br>
+ * - VER:    协议版本，short类型，目前仅支持0x01;<br>
+ * - OPCODE: 操作码，int类型。具体见{@link DanmakuPacket.Action};<br>
+ * - PARAM:  操作参数，int类型，默认0x01;<br>
  * - BODY:   数据包体，长度可变。
  *
  * @author Charlie Jiang

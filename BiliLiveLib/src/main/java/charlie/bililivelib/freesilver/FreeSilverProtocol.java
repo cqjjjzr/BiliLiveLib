@@ -116,6 +116,7 @@ public class FreeSilverProtocol {
 
     /**
      * 对于给定银瓜子信息，等待并领取它。
+     * @param currentInfo 给定银瓜子信息
      * @return 领取结果
      * @throws WrongCaptchaException 验证码错误时抛出
      * @throws NotLoggedInException 未登录时抛出
@@ -254,6 +255,7 @@ public class FreeSilverProtocol {
 
         /**
          * 标识是否还有银瓜子可领。
+         * @return 是否有银瓜子
          */
         public boolean hasRemaining() {
             return code == CODE_REMAINING;

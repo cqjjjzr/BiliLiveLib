@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 用于方便构造Http Post参数的Entity的类。仅内部使用。<br />
- * 注意，本类的通常使用方式是串联使用，例如：<br />
+ * 用于方便构造Http Post参数的Entity的类。仅内部使用。<br>
+ * 注意，本类的通常使用方式是串联使用，例如：<br>
  * {@code new PostArguments().add("username", "admin").add("password", "123abc").toEntity()}
  *
  * @author Charlie Jiang
