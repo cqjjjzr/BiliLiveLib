@@ -12,7 +12,10 @@
 hs_err_pid*
 
 cookies.bin
-captchaLogin.png
+*/captchaLogin.png
 */target/
 BiliLiveLib/src/test/resources/captcha/*
 BiliOnlineKeeper_/
+
+*.iml
+.idea
