@@ -87,7 +87,7 @@ public class DanmakuReceiver implements Runnable {
 
     private void checkArguments() {
         if (commentServer == null) throw new NullPointerException();
-        if (roomID < 10000) throw new IllegalArgumentException("roomID < 10000");
+        if (roomID < 1000) throw new IllegalArgumentException("roomID < 1000");
         if (uid < 1) throw new IllegalArgumentException("UserID < 0");
         if (commentServer.isEmpty()) throw new IllegalArgumentException("commentServer is empty");
     }
@@ -163,7 +163,7 @@ public class DanmakuReceiver implements Runnable {
                 break;
             case UNKNOWN:
             case PLAYER_COMMAND:
-                dispatchManager.dispatch(listeners, new String(bodyBuffer), this);
+                dispatchManager.dispatch(listeners, new String(bodyBuffer, Charset.forName("UTF-8")), this);
         }
     }
 
