@@ -81,36 +81,12 @@ public class Room {
     }
 
     private void fillRealRoomID() throws BiliLiveException {
-        if (roomID >= 1000) return; // Only need to get real room id when room id is 3-digit short id.
-        try {
-            HttpResponse response = session.getHttpHelper().createGetBiliLiveHost(getRealRoomIDRequestURL(roomID));
-            int statusCode = HttpHelper.getStatusCode(response);
-
-            if (statusCode == HTTP_OK) {
-                String htmlString = HttpHelper.responseToString(response);
-                parseAndFillRealRoomID(htmlString);
-            } else if (statusCode == HTTP_NOT_FOUND) { // NOT FOUND means invalid room id.
-                throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
-            } else {
-                throw NetworkException.createHttpError(getString("exception.roomid"), statusCode);
-            }
-        } catch (IOException ex) {
-            throw new NetworkException(getString("exception.roomid"), ex);
-        }
+        roomID = getRealRoomID(roomID);
     }
 
     @Contract(pure = true)
-    private String getRealRoomIDRequestURL(int originalRoomID) {
+    private static String getRealRoomIDRequestURL(int originalRoomID) {
         return REAL_ROOMID_GET + originalRoomID;
-    }
-
-    private void parseAndFillRealRoomID(@NotNull String httpString) throws RoomIDNotFoundException {
-        Matcher matcher = REAL_ROOMID_PATTERN.matcher(httpString);
-        if (matcher.find()) {
-            roomID = Integer.parseInt(matcher.group());
-        } else {
-            throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
-        }
     }
 
     private void fillRoomInfo() throws BiliLiveException {
@@ -264,5 +240,31 @@ public class Room {
         private int uid;
         private UserGuardLevel guardLevel;
         private boolean self;
+    }
+
+    public static int getRealRoomID(int roomID) throws NetworkException, RoomIDNotFoundException {
+        if (roomID >= 10000) return roomID; // Only need to get real room id when room id is 3/4-digit short id.
+        try {
+            HttpHelper h = new HttpHelper();
+            h.init("");
+            HttpResponse response = h.createGetBiliLiveHost(getRealRoomIDRequestURL(roomID));
+            int statusCode = HttpHelper.getStatusCode(response);
+
+            if (statusCode == HTTP_OK) {
+                String htmlString = HttpHelper.responseToString(response);
+                Matcher matcher = REAL_ROOMID_PATTERN.matcher(htmlString);
+                if (matcher.find()) {
+                    return Integer.parseInt(matcher.group());
+                } else {
+                    throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
+                }
+            } else if (statusCode == HTTP_NOT_FOUND) { // NOT FOUND means invalid room id.
+                throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
+            } else {
+                throw NetworkException.createHttpError(getString("exception.roomid"), statusCode);
+            }
+        } catch (IOException ex) {
+            throw new NetworkException(getString("exception.roomid"), ex);
+        }
     }
 }

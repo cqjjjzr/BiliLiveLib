@@ -16,11 +16,15 @@ import charlie.bilionlinekeeper.util.LogUtil
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.util.*
 
 class SmallTV(session: Session,
-              private val receiver: DanmakuReceiver = startupNewReceiver(session)) : DanmakuAdapter() {
+              private val receiver: DanmakuReceiver = startupNewReceiver(session),
+              private val reconnectTimeMillis: Long = 0L) : DanmakuAdapter() {
     private val protocol: SmallTVProtocol = SmallTVProtocol(session)
     private val logger = LogManager.getLogger("smallTV")
+    private var reconnectTask: TimerTask = AutoReconnectTask()
+    private val timer = Timer("SmallTV-ReconnectTask")
 
     override fun globalGiftEvent(event: DanmakuEvent) {
         val smallTV = event.param as SmallTV
@@ -43,15 +47,23 @@ class SmallTV(session: Session,
 
     fun start() {
         receiver.addDanmakuListener(this)
+        if (reconnectTimeMillis != 0L) {
+            reconnectTask = AutoReconnectTask()
+            timer.schedule(reconnectTask, reconnectTimeMillis, reconnectTimeMillis)
+        }
         logStart()
     }
 
     private fun logStart() {
         logger.info(I18n.getString("smallTV.start"))
+
     }
 
     fun stop() {
         receiver.removeDanmakuListener(this)
+        if (reconnectTimeMillis != 0L) {
+            reconnectTask.cancel()
+        }
         logStop()
     }
 
@@ -76,7 +88,6 @@ class SmallTV(session: Session,
 
         private val countDownMillis: Long
         private val smallTV: SmallTV
-        private val logger: Logger
 
         override fun run() {
             startupThread()
@@ -140,7 +151,16 @@ class SmallTV(session: Session,
         init {
             this.countDownMillis = (countDownSeconds * 1000).toLong()
             this.smallTV = smallTV
-            this.logger = logger
+        }
+    }
+
+    private inner class AutoReconnectTask : TimerTask() {
+        override fun run() {
+             if (isStarted()) {
+                 receiver.disconnect()
+                 receiver.connect()
+                 logger.debug("Reset receiver!")
+             }
         }
     }
 }

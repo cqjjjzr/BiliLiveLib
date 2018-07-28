@@ -6,7 +6,6 @@ import charlie.bililivelib.danmaku.datamodel.JoinServerJson;
 import charlie.bililivelib.danmaku.dispatch.DispatchManager;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
 import charlie.bililivelib.danmaku.event.DanmakuListener;
-import charlie.bililivelib.room.Room;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,7 @@ public class DanmakuReceiver implements Runnable {
     public static final int HEARTBEAT_PERIOD_MILLIS = 30 * 1000;
 
     @Getter
-    private Room room;
+    private int roomID;
     @Getter
     private long uid;
     @Getter
@@ -62,16 +61,16 @@ public class DanmakuReceiver implements Runnable {
     private InputStream  inputStream;
     private Socket       socket;
 
-    public DanmakuReceiver(@NotNull Room room) {
-        this(room, generateRandomUID(), CMT_SERVERS[0]);
+    public DanmakuReceiver(int roomID) {
+        this(roomID, generateRandomUID(), CMT_SERVERS[0]);
     }
 
-    public DanmakuReceiver(@NotNull Room room, long uid) {
-        this(room, uid, CMT_SERVERS[0]);
+    public DanmakuReceiver(int roomID, long uid) {
+        this(roomID, uid, CMT_SERVERS[0]);
     }
 
-    public DanmakuReceiver(@NotNull Room room, long uid, @NotNull String commentServer) {
-        this.room = room;
+    public DanmakuReceiver(int roomID, long uid, @NotNull String commentServer) {
+        this.roomID = roomID;
         this.uid = uid;
         this.commentServer = commentServer;
 
@@ -87,7 +86,8 @@ public class DanmakuReceiver implements Runnable {
     }
 
     private void checkArguments() {
-        if (room == null || commentServer == null) throw new NullPointerException();
+        if (commentServer == null) throw new NullPointerException();
+        if (roomID < 10000) throw new IllegalArgumentException("roomID < 10000");
         if (uid < 1) throw new IllegalArgumentException("UserID < 0");
         if (commentServer.isEmpty()) throw new IllegalArgumentException("commentServer is empty");
     }
@@ -98,7 +98,7 @@ public class DanmakuReceiver implements Runnable {
     public void connect() {
         if (status == Status.NOT_CONNECTED) {
             Thread thread = new Thread(this);
-            heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + room.getRoomID());
+            heartbeatTimer = new Timer("DanmakuReceiver-HeartbeatTimer-" + roomID);
             thread.start();
         }
     }
@@ -126,7 +126,7 @@ public class DanmakuReceiver implements Runnable {
             joinServer();
 
             status = Status.CONNECTED;
-            fireDanmakuEvent(I18n.format("msg.danmaku_joined", room.getRoomID()), DanmakuEvent.Kind.JOINED);
+            fireDanmakuEvent(I18n.format("msg.danmaku_joined", roomID), DanmakuEvent.Kind.JOINED);
             heartbeatTimer.schedule(new TimerTask() {
                 @Override
                 @SuppressWarnings("deprecation")
@@ -168,11 +168,11 @@ public class DanmakuReceiver implements Runnable {
     }
 
     private void startupThread() {
-        Thread.currentThread().setName("DanmakuReceiver-" + room.getRoomID());
+        Thread.currentThread().setName("DanmakuReceiver-" + roomID);
     }
 
     private void joinServer() throws IOException {
-        JoinServerJson json = new JoinServerJson(room.getRoomID(), uid);
+        JoinServerJson json = new JoinServerJson(roomID, uid);
         writePacket(new DanmakuPacket(DanmakuPacket.Action.JOIN_SERVER,
                 Globals.get().gson().toJson(json)));
     }

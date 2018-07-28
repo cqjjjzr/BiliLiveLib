@@ -2,6 +2,7 @@ package charlie.bililivelib.user;
 
 import charlie.bililivelib.BiliLiveLib;
 import charlie.bililivelib.Globals;
+import charlie.bililivelib.OptionalGlobals;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.WrongCaptchaException;
@@ -129,7 +130,7 @@ public class SessionLoginHelper {
         // "14:20:09.451 [main] INFO  c.g.h.NicelyResynchronizingAjaxController
         // - Re-synchronized call to https://passport.bilibili.com/ajax/miniLogin/login"
 
-        webClient.setCache(Globals.get().getHtmlUnitCache());
+        webClient.setCache(OptionalGlobals.get().getHtmlUnitCache());
         webClient.addRequestHeader("User-Agent", userAgent);
     }
 

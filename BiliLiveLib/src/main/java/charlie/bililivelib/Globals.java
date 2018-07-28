@@ -1,8 +1,6 @@
 package charlie.bililivelib;
 
-import charlie.bililivelib.internalutil.OCRUtil;
 import charlie.bililivelib.internalutil.net.BilibiliTrustStrategy;
-import com.gargoylesoftware.htmlunit.Cache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
@@ -34,11 +32,10 @@ public class Globals {
     @Getter
     private HttpHost biliPassportHttpsRoot;
     private ThreadLocal<Gson> gson;
-    private ThreadLocal<Cache> htmlUnitCache;
+
     private HttpClientConnectionManager connectionPool;
     @Getter
     private SSLContext bilibiliSSLContext;
-    private OCRUtil ocrUtil;
 
     public static Globals get() {
         if (instance == null) {
@@ -55,7 +52,7 @@ public class Globals {
         gson = ThreadLocal.withInitial(() -> new GsonBuilder()
                 .setLenient()
                 .create());
-        htmlUnitCache = ThreadLocal.withInitial(Cache::new);
+
         try {
             bilibiliSSLContext = SSLContextBuilder.create()
                     .loadTrustMaterial(new BilibiliTrustStrategy())
@@ -67,10 +64,6 @@ public class Globals {
 
     public Gson gson() {
         return gson.get();
-    }
-
-    public Cache getHtmlUnitCache() {
-        return htmlUnitCache.get();
     }
 
     public HttpClientConnectionManager getConnectionPool() {
@@ -89,10 +82,5 @@ public class Globals {
         reInitializeConnectionPool();
     }
 
-    public OCRUtil getOcrUtil() {
-        if (ocrUtil == null) {
-            ocrUtil = new OCRUtil();
-        }
-        return ocrUtil;
-    }
+
 }

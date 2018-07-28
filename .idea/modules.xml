@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BiliLiveLib/BiliLiveLib.iml" filepath="$PROJECT_DIR$/BiliLiveLib/BiliLiveLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BiliLiveOnlineKeeper/BiliLiveOnlineKeeper.iml" filepath="$PROJECT_DIR$/BiliLiveOnlineKeeper/BiliLiveOnlineKeeper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BiliLiveLib/charlie.bililivelib.iml" filepath="$PROJECT_DIR$/BiliLiveLib/charlie.bililivelib.iml" />
     </modules>
   </component>
 </project>

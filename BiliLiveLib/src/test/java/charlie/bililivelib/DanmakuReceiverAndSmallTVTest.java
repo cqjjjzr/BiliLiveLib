@@ -48,11 +48,10 @@ public class DanmakuReceiverAndSmallTVTest {
 
     @Test
     public void testDanmaku() throws Exception {
-        Room room = new Room(SIXTEEN_ROOMID, session);
-        DanmakuReceiver receiver = new DanmakuReceiver(room,
+        DanmakuReceiver receiver = new DanmakuReceiver(Room.getRealRoomID(SIXTEEN_ROOMID),
                 DanmakuReceiver.generateRandomUID(), DanmakuReceiver.CMT_SERVERS[1]);
-        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
-        receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());
+        /*receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new StartStopDispatcher());*/
         receiver.getDispatchManager().registerDispatcher(new WelcomeVipDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());

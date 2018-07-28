@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.cqjjjzr:charlie.bililivelib:rv1-debug">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/cqjjjzr/charlie.bililivelib/rv1-debug/charlie.bililivelib-rv1-debug.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/BiliLiveLib/charlie.bililivelib-rv1-debug-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/cqjjjzr/charlie.bililivelib/rv1-debug/charlie.bililivelib-rv1-debug-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/BiliLiveLib/charlie.bililivelib-rv1-debug-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/cqjjjzr/charlie.bililivelib/rv1-debug/charlie.bililivelib-rv1-debug-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

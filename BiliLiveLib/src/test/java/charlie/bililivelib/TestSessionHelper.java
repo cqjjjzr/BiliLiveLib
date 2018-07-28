@@ -3,9 +3,12 @@ package charlie.bililivelib;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.user.Session;
 import charlie.bililivelib.user.SessionLoginHelper;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +18,12 @@ import static org.junit.Assert.assertTrue;
 
 public class TestSessionHelper {
     public static Session initSession() throws IOException, BiliLiveException {
-        Session session = new Session(Globals.get().getConnectionPool());
+        BasicCookieStore store = new BasicCookieStore();
+        Session session = new Session(HttpClientBuilder.create()
+                .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.96 Safari/537.36")
+                .setConnectionManager(Globals.get().getConnectionPool())
+                .setSSLContext(Globals.get().getBilibiliSSLContext())
+                .setDefaultCookieStore(store).build(), store);
         Path cookieFile = Paths.get("cookies.bin");
         if (Files.exists(cookieFile)) {
             loadSessionFromFile(session);
@@ -24,7 +32,9 @@ public class TestSessionHelper {
             Files.createFile(cookieFile);
         }
 
-        Files.write(cookieFile, session.toBase64().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        ObjectOutputStream stream = new ObjectOutputStream(Files.newOutputStream(cookieFile, StandardOpenOption.TRUNCATE_EXISTING));
+        stream.writeObject(store);
+        stream.close();
         return session;
     }
 
@@ -57,4 +67,7 @@ public class TestSessionHelper {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
+    public static void main(String[] args) throws IOException, BiliLiveException {
+        initSession();
+    }
 }

@@ -20,11 +20,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="BiliLiveLib" />
+        <module name="BiliLiveOnlineKeeper" />
         <module name="BiliRecorderLib" />
+        <module name="charlie.bililivelib" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="BiliLiveLib" target="1.8" />
+      <module name="BiliLiveOnlineKeeper" target="1.8" />
+      <module name="charlie.bililivelib" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

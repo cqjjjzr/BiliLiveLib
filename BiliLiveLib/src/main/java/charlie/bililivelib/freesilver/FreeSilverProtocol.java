@@ -1,7 +1,7 @@
 package charlie.bililivelib.freesilver;
 
-import charlie.bililivelib.Globals;
 import charlie.bililivelib.I18n;
+import charlie.bililivelib.OptionalGlobals;
 import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.exceptions.NetworkException;
 import charlie.bililivelib.exceptions.NotLoggedInException;
@@ -53,7 +53,7 @@ public class FreeSilverProtocol {
      */
     @NotNull
     public static String ocrCaptcha(BufferedImage image) {
-        return String.valueOf(new CaptchaUtil(Globals.get().getOcrUtil()).evalCalcCaptcha(image));
+        return String.valueOf(new CaptchaUtil(OptionalGlobals.get().getOcrUtil()).evalCalcCaptcha(image));
     }
 
     /**
