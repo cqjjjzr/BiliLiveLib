@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- OSSRH RELEASE INFOs -->
     <groupId>com.github.cqjjjzr</groupId>
     <artifactId>charlie.bililivelib</artifactId>
-    <version>rv1-release</version>
+    <version>rv2</version>
     <packaging>jar</packaging>
     <name>BiliLiveLib:${project.version}</name>
     <description>A library to access Bilibili Live.</description>
@@ -28,7 +26,8 @@
         <connection>scm:git:git://github.com/cqjjjzr/BiliLiveLib.git</connection>
         <url>https://github.com/cqjjjzr/BiliLiveLib</url>
         <developerConnection>scm:git:git://github.com/cqjjjzr/BiliLiveLib.git</developerConnection>
-    </scm>
+      <tag>rv2</tag>
+  </scm>
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/cqjjjzr/BiliLiveLib</url>
@@ -59,7 +58,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>LATEST</version>
+            <version>4.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -69,22 +68,24 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>LATEST</version>
+            <version>1.18.2</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.tess4j</groupId>
             <artifactId>tess4j</artifactId>
             <version>3.2.1</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
             <version>2.23</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>LATEST</version>
+            <version>16.0.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -112,6 +113,10 @@
                 <version>2.4</version>
                 <configuration>
                     <tagNameFormat>@{project.version}</tagNameFormat>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>.idea/libraries/*</checkModificationExclude>
+                        <checkModificationExclude>BiliLiveLib/captchaLogin.png</checkModificationExclude>
+                    </checkModificationExcludes>
                 </configuration>
             </plugin>
             <plugin>
