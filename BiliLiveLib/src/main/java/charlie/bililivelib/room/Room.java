@@ -9,6 +9,7 @@ import charlie.bililivelib.exceptions.RoomIDNotFoundException;
 import charlie.bililivelib.internalutil.net.HttpHelper;
 import charlie.bililivelib.room.datamodel.RoomInfoResponseJson;
 import charlie.bililivelib.user.Session;
+import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
@@ -20,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
+import java.net.URL;
 import java.text.MessageFormat;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static charlie.bililivelib.I18n.getString;
@@ -41,7 +42,7 @@ public class Room {
     private static final int RESPONSE_ROOM_NOT_FOUND = -400;
 
     private static final String LIVE_ADDRESSES_MF_GET = "/api/playurl?cid={0,number,###}&player=1&quality=0";
-    private static final String REAL_ROOMID_GET = "/";
+    private static final String REAL_ROOMID_GET = "https://api.live.bilibili.com/room/v1/Room/room_init?id=";
     private static final String LIVE_GET_INFO_GET = "/live/getInfo?roomid=";
 
     private static final Pattern REAL_ROOMID_PATTERN = Pattern.compile("(?<=var ROOMID = )(\\d+)(?=;)");
@@ -247,19 +248,20 @@ public class Room {
         try {
             HttpHelper h = new HttpHelper();
             h.init("");
-            HttpResponse response = h.createGetBiliLiveHost(getRealRoomIDRequestURL(roomID));
+            HttpResponse response = h.createGetResponse(new URL(getRealRoomIDRequestURL(roomID)));
             int statusCode = HttpHelper.getStatusCode(response);
 
             if (statusCode == HTTP_OK) {
-                String htmlString = HttpHelper.responseToString(response);
-                Matcher matcher = REAL_ROOMID_PATTERN.matcher(htmlString);
-                if (matcher.find()) {
-                    return Integer.parseInt(matcher.group());
+                JsonObject json = Globals.get().gson().fromJson(HttpHelper.responseToString(response), JsonObject.class);
+                int code = json.get("code").getAsInt();
+                String msg = json.get("msg").getAsString();
+                if (code == 0) {
+                    return json.getAsJsonObject("data").get("room_id").getAsInt();
                 } else {
-                    throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
+                    throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID, code + " " + msg));
                 }
             } else if (statusCode == HTTP_NOT_FOUND) { // NOT FOUND means invalid room id.
-                throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID));
+                throw new RoomIDNotFoundException(I18n.format("exception.roomid_not_found", roomID, "404"));
             } else {
                 throw NetworkException.createHttpError(getString("exception.roomid"), statusCode);
             }

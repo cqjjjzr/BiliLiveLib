@@ -4,9 +4,7 @@ import charlie.bililivelib.danmaku.DanmakuReceiver;
 import charlie.bililivelib.danmaku.dispatch.*;
 import charlie.bililivelib.danmaku.event.DanmakuAdapter;
 import charlie.bililivelib.danmaku.event.DanmakuEvent;
-import charlie.bililivelib.exceptions.BiliLiveException;
 import charlie.bililivelib.room.Room;
-import charlie.bililivelib.smalltv.SmallTV;
 import charlie.bililivelib.smalltv.SmallTVProtocol;
 import charlie.bililivelib.smalltv.SmallTVReward;
 import charlie.bililivelib.user.Session;
@@ -18,21 +16,20 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static charlie.bililivelib.TestSessionHelper.initSession;
 import static charlie.bililivelib.TestSessionHelper.testInput;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.assertTrue;
 
 public class DanmakuReceiverAndSmallTVTest {
-    public static final int SIXTEEN_ROOMID = 10313;
+    public static final int SIXTEEN_ROOMID = 148;
     public static final int CHARLIE_JIANG_ROOMID = 39249;
     public static final int MARCOV_ROOMID = 17029;
     private static Session session;
 
     @BeforeClass
-    public static void init() throws Exception {
+    public static void init() {
         LogUtil.init();
 
-        session = initSession();
+        //session = initSession();
     }
 
     @Ignore
@@ -56,6 +53,7 @@ public class DanmakuReceiverAndSmallTVTest {
         receiver.getDispatchManager().registerDispatcher(new GiveGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalGiftDispatcher());
         receiver.getDispatchManager().registerDispatcher(new GlobalAnnounceDispatcher());
+        receiver.getDispatchManager().registerDispatcher(new DanmakuDispatcher());
         receiver.addDanmakuListener(new TestListener());
         receiver.connect();
         synchronized (this) {
@@ -65,7 +63,6 @@ public class DanmakuReceiverAndSmallTVTest {
 
     private class TestListener extends DanmakuAdapter {
         private Logger logger = LogManager.getLogger(BiliLiveLib.class);
-        private SmallTVProtocol smallTVProtocol = new SmallTVProtocol(session);
 
         @Override
         public void welcomeVipEvent(@NotNull DanmakuEvent event) {
@@ -105,13 +102,7 @@ public class DanmakuReceiverAndSmallTVTest {
 
         @Override
         public void globalGiftEvent(@NotNull DanmakuEvent event) {
-            logger.log(Level.INFO, "Global SmallTV:" + event.getParam());
-            try {
-                smallTVProtocol.joinLottery((SmallTV) event.getParam());
-                logger.log(Level.INFO, "Joined Global SmallTV:" + event.getParam());
-            } catch (BiliLiveException e) {
-                e.printStackTrace();
-            }
+
         }
 
         @Override
