@@ -25,6 +25,7 @@ public abstract class AbstractJSONDispatcher implements Dispatcher {
 
     private boolean checkCanDispatch(JsonObject rootObject) {
         String command = getCommand(rootObject);
+        if (command == null) return false;
         for (String acceptable : getAcceptableCommands()) {
             if (command.equals(acceptable)) return true;
         }
@@ -49,7 +50,9 @@ public abstract class AbstractJSONDispatcher implements Dispatcher {
     }
 
     public String getCommand(JsonObject rootObject) {
-        return rootObject.get("cmd").getAsString();
+        if (rootObject.has("cmd"))
+            return rootObject.get("cmd").getAsString();
+        return null;
     }
 
     /**

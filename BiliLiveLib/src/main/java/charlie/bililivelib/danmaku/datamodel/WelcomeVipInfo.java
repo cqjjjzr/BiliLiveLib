@@ -20,6 +20,6 @@ public class WelcomeVipInfo {
         JsonObject dataObject = rootObject.get("data").getAsJsonObject();
 
         username = dataObject.get("uname").getAsString();
-        admin = dataObject.get("isadmin").getAsBoolean();
+        admin = dataObject.get("is_admin").getAsBoolean();
     }
 }

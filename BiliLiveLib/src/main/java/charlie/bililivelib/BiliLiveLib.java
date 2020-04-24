@@ -9,6 +9,6 @@ package charlie.bililivelib;
 public class BiliLiveLib {
     public static final String PROJECT_NAME = "BiliLiveLib";
 
-    public static final String VERSION = "rv4";
+    public static final String VERSION = "rv5";
     public static String DEFAULT_USER_AGENT = PROJECT_NAME + " " + VERSION;
 }
